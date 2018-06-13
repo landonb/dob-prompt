@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with 'dob'.  If not, see <http://www.gnu.org/licenses/>.
 
-"""dob ``hamster list`` commands."""
+"""PPT WordCompleter subclass."""
 
 from __future__ import absolute_import, unicode_literals
 
