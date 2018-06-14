@@ -21,8 +21,7 @@ from __future__ import absolute_import, unicode_literals
 
 from gettext import gettext as _
 
-# FIXME: RENAME and release pyoiler* libraries
-from pyoiler_inflector import Inflector
+from inflector import Inflector, English
 from pedantic_timedelta import PedanticTimedelta
 from prompt_toolkit.auto_suggest import Suggestion
 from prompt_toolkit.completion import WordCompleter
@@ -76,7 +75,7 @@ class FactPartCompleterSuggester(WordCompleter):
         ).format(
             name=name,
             usage=usage,
-            facts=Inflector.pluralize(_('fact'), usage != 1),
+            facts=Inflector(English).conditional_plural(usage, _('fact')),
             time=tm_fmttd,
         )
 
