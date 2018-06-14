@@ -80,10 +80,15 @@ class BannerSection(InterfaceSection):
         self.add_zinger(self.content, italic=True, underline=True)
         self.add_zinger(' ')
 
-    def italicize_and_underline_clean(self, content):
+    # (lb): Not sure what I like: underlined spaces in the title, or not.
+    def italicize_and_underline_clean(self, content, noline_whitespace=False):
         self.add_zinger(' ')
-        for part in content.split(' '):
-            self.add_zinger(part, italic=True, underline=True)
+        if noline_whitespace:
+            for part in content.split(' '):
+                self.add_zinger(part, italic=True, underline=True)
+                self.add_zinger(' ')
+        else:
+            self.add_zinger(content, italic=True, underline=True)
             self.add_zinger(' ')
 
 
