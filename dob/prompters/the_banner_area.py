@@ -59,7 +59,7 @@ class BannerBarArea(object):
             term_width=term_width,
         )
         self.content = (
-            'Fact',  # FIXME: (lb): Call it something else? And dehardcode this.
+            self.prompter.bannerbar_title,
             self.prompter.type_request,
             self.help_section_text,
         )

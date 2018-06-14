@@ -29,6 +29,7 @@ from prompt_toolkit.shortcuts import CompleteStyle
 
 from . import PrompterCommon
 from .the_banner_area import BannerBarArea
+from .. import __BigName__
 from ..cmd_config import get_history_path
 from ..helpers.path import touch
 
@@ -68,6 +69,10 @@ class SophisticatedPrompt(PrompterCommon):
         self.showing_completions = False
 
     # ***
+
+    @property
+    def bannerbar_title(self):
+        return __BigName__
 
     @property
     def fact_part_friendly(self):
