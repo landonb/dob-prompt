@@ -23,7 +23,7 @@ from gettext import gettext as _
 
 # FIXME: RENAME and release pyoiler* libraries
 from pyoiler_inflector import Inflector
-from pyoiler_timedelta import timedelta_wrap
+from pedantic_timedelta import PedanticTimedelta
 from prompt_toolkit.auto_suggest import Suggestion
 from prompt_toolkit.completion import WordCompleter
 
@@ -69,7 +69,7 @@ class FactPartCompleterSuggester(WordCompleter):
 
         (
             tm_fmttd, tm_scale, tm_units,
-        ) = timedelta_wrap(days=span).time_format_scaled()
+        ) = PedanticTimedelta(days=span).time_format_scaled()
 
         metad[name] = _(
             'Used on {usage} {facts} for {time}: “{name}”'
