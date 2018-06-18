@@ -317,9 +317,10 @@ class SophisticatedPrompt(PrompterCommon):
 
     # Called in a loop by the actegory- or tagcloud-asker, either until
     # valid actegory entered, or until user is finished entering tags.
-    def session_prompt(self):
+    def session_prompt(self, default=''):
         text = self.session.prompt(
             self.session_prompt_prefix,
+            default=default,
 
             bottom_toolbar=self.bottom_toolbar,
             # FIXME: (lb): Add animation? Then redraw periodically; else, no cares.

@@ -85,8 +85,9 @@ class PromptForActegory(SophisticatedPrompt):
     def ask_act_cat(self, filter_activity, filter_category):
         self.activity = filter_activity
         self.category = filter_category
+        self.restrict_category = False
 
-        if self.activity:
+        if self.activity and not self.category:
             self.restrict_category = True
 
         self.prepare_session()
@@ -105,7 +106,10 @@ class PromptForActegory(SophisticatedPrompt):
             self.clean_up_print_text_header()
 
     def prompt_for_actegory(self):
-        text = self.session_prompt()
+        default = ''
+        if self.activity and self.category:
+            default = '{}@{}'.format(self.activity, self.category)
+        text = self.session_prompt(default=default)
         self.process_user_reponse(text)
         # Prepare to run again, if necessary.
         #  And start with completions open.
@@ -224,7 +228,7 @@ class ActegoryHackyProcessor(HackyProcessor):
             self.before_input.text = text
             return self.before_input.apply_transformation(transformation_input)
 
-        if self.prompter.category:
+        if self.prompter.category and not self.prompter.activity:
             text = '@{}'.format(self.prompter.category)
             self.after_input.text = text
             return self.after_input.apply_transformation(transformation_input)
