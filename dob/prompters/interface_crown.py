@@ -17,7 +17,6 @@
 
 from __future__ import absolute_import, unicode_literals
 
-from .colors_terrific import TerrificColors
 from .interface_bases import InterfaceBuilder, InterfaceSection
 
 __all__ = [
@@ -107,7 +106,7 @@ class BannerBarBuilder(InterfaceBuilder):
                 text,
                 width,
                 term_width=self.term_width,
-                colors=TerrificColors(),
+                colors=self.colors,
             )
             # (lb): Not calling, self.wire_linked_list(section),
             # because separate lines.

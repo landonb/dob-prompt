@@ -20,7 +20,6 @@ from __future__ import absolute_import, unicode_literals
 from prompt_toolkit import print_formatted_text
 from prompt_toolkit.formatted_text import FormattedText
 
-from .colors_terrific import TerrificColors
 from .interface_crown import BannerBarBuilder
 
 
@@ -55,7 +54,7 @@ class BannerBarArea(object):
     def build_builder(self, term_width=0):
         stretch_width = self.prompter.bottombar.builder.first_line_len
         self.builder = BannerBarBuilder(
-            colors=TerrificColors(),
+            colors=self.prompter.colors,
             term_width=term_width,
         )
         self.content = (

@@ -22,7 +22,6 @@ from gettext import gettext as _
 import six
 from prompt_toolkit.styles import Style
 
-from .colors_terrific import TerrificColors
 from .interface_bonds import KeyBond
 from .interface_fanny import BindingsBarBuilder
 
@@ -324,8 +323,8 @@ class BottomBarArea(object):
         # is a lot easier.)
         style = Style.from_dict({
             'bottom-toolbar': '#{} bg:#{}'.format(
-                TerrificColors().color_2,
-                TerrificColors().color_1,
+                self.prompter.colors.color_2,
+                self.prompter.colors.color_1,
             ),
             # We could specify the text color here, e.g.,
             #  'bottom-toolbar.text': '#FCA5A5 bg:#AA3939',
@@ -341,7 +340,7 @@ class BottomBarArea(object):
     def build_builder(self):
         def build_bottom_toolbar():
             builder = BindingsBarBuilder(
-                colors=TerrificColors(),
+                colors=self.prompter.colors,
             )
             add_bindings_sort(builder)
             add_bindings_filter(builder)

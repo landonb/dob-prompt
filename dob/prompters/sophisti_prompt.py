@@ -75,6 +75,10 @@ class SophisticatedPrompt(PrompterCommon):
         return __BigName__
 
     @property
+    def colors(self):
+        raise NotImplementedError
+
+    @property
     def fact_part_friendly(self):
         raise NotImplementedError
 
