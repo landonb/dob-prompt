@@ -21,7 +21,7 @@ from gettext import gettext as _
 
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput, Transformation
 
-from .colors_terrific import TerrificColors
+from .colors_terrific import TerrificColors1
 from .hacky_processor import HackyProcessor
 from .interface_bonds import KeyBond
 from .parts_suggester import FactPartCompleterSuggester
@@ -48,7 +48,7 @@ class PromptForActegory(SophisticatedPrompt):
 
     @property
     def colors(self):
-        return TerrificColors()
+        return TerrificColors1()
 
     @property
     def fact_part_friendly(self):

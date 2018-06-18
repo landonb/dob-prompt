@@ -20,11 +20,13 @@ from __future__ import absolute_import, unicode_literals
 from .interface_bases import InterfaceStyle
 
 __all__ = [
-    'TerrificColors',
+    'TerrificColors1',
+    'TerrificColors2',
+    'TerrificColors3',
 ]
 
 
-class TerrificColors(InterfaceStyle):
+class TerrificColors1(InterfaceStyle):
     """
     """
 
@@ -49,4 +51,42 @@ class TerrificColors(InterfaceStyle):
     @property
     def color_3(self):
         return '7D1313'
+
+
+class TerrificColors2(InterfaceStyle):
+    """
+    """
+
+    # http://paletton.com/#uid=5000u0kg0qB6pHIb0vBljljq+fD
+
+    @property
+    def color_1(self):
+        return '882E61'
+
+    @property
+    def color_2(self):
+        return 'CA85AC'  # 'D49A6A'
+
+    @property
+    def color_3(self):
+        return '641040'
+
+
+class TerrificColors3(InterfaceStyle):
+    """
+    """
+
+    # http://paletton.com/#uid=5000u0kg0qB6pHIb0vBljljq+fD
+
+    @property
+    def color_1(self):
+        return 'AA6C39'
+
+    @property
+    def color_2(self):
+        return 'FCCCA5'  # 'AA5585'
+
+    @property
+    def color_3(self):
+        return '7D4313'
 

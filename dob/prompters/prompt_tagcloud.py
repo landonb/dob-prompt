@@ -19,7 +19,7 @@ from __future__ import absolute_import, unicode_literals
 
 from gettext import gettext as _
 
-from .colors_terrific import TerrificColors
+from .colors_terrific import TerrificColors2
 from .hacky_processor import HackyProcessor
 from .interface_bonds import KeyBond
 from .parts_suggester import FactPartCompleterSuggester
@@ -43,7 +43,7 @@ class PromptForMoreTags(SophisticatedPrompt):
 
     @property
     def colors(self):
-        return TerrificColors()
+        return TerrificColors2()
 
     @property
     def fact_part_friendly(self):
