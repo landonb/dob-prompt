@@ -30,7 +30,7 @@ from prompt_toolkit.shortcuts import CompleteStyle
 from . import PrompterCommon
 from .the_banner_area import BannerBarArea
 from .. import __BigName__
-from ..cmd_config import get_history_path
+from ..cmd_config import get_appdirs_subdir_file_path, AppDirs
 from ..helpers.path import touch
 
 __all__ = [
@@ -93,7 +93,7 @@ class SophisticatedPrompt(PrompterCommon):
     # ***
 
     def init_history(self):
-        file_path = get_history_path(self.history_topic)
+        file_path = self.history_path
         if file_path:
             # Make sure it exists, else "No such file or directory".
             touch(file_path)
@@ -364,4 +364,26 @@ class SophisticatedPrompt(PrompterCommon):
         self.reset_completer(binding=binding, toggle_ok=toggle_ok)
         if self.showing_completions:
             event.app.current_buffer.start_completion()
+
+    # ***
+
+    DEFAULT_HIST_PATH_DIR = 'history'
+
+    @property
+    def history_path(self):
+        """
+        Return the path to the history file for a specific topic.
+
+        Args:
+            topic (text_type): Topic name, to distinguish different histories.
+
+        Returns:
+            str: Fully qualified path to history file for specified topic.
+        """
+        hist_path = get_appdirs_subdir_file_path(
+            file_basename=self.history_topic,
+            dir_dirname=SophisticatedPrompt.DEFAULT_HIST_PATH_DIR,
+            appdirs_dir=AppDirs.user_cache_dir,
+        )
+        return hist_path
 
