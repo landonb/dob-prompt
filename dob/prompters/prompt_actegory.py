@@ -97,7 +97,9 @@ class PromptForActegory(SophisticatedPrompt):
 
     def keep_prompting_until_satisfied(self):
         try:
-            while not self.activity or not self.category:
+            prompt_once = True
+            while prompt_once or (not self.activity or not self.category):
+                prompt_once = False
                 self.prompt_for_actegory()
         finally:
             self.clean_up_print_text_header()
