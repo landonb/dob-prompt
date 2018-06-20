@@ -39,7 +39,24 @@ class PromptForMoreTags(SophisticatedPrompt):
 
     def __init__(self, controller):
         super(PromptForMoreTags, self).__init__(controller)
+        self.activity = None
         self.tags_cache = {}
+
+    @property
+    def activity_name(self):
+        if self.activity is None:
+            return '<None>'
+        else:
+            return self.activity.name
+
+    @property
+    def category_name(self):
+        if self.activity is None:
+            return '<Act:None>'
+        elif self.activity.category is None:
+            return '<None>'
+        else:
+            return self.activity.category.name
 
     @property
     def colors(self):
@@ -56,7 +73,7 @@ class PromptForMoreTags(SophisticatedPrompt):
     @property
     def type_request(self):
         return _('Select <#tags> for “{}@{}”').format(
-            self.activity.name, self.activity.category.name,
+            self.activity_name, self.category_name,
         )
 
     @property
