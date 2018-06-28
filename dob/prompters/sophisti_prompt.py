@@ -143,6 +143,9 @@ class SophisticatedPrompt(PrompterCommon):
     # ***
 
     def prepare_session(self):
+        # Get the terminal size measure function.
+        self.get_size = self.prompt_session.app.renderer.output.get_size
+
         self.stand_up_banner_and_bottom()
 
         # If caller is interrogating for more than one Fact, remember
@@ -155,9 +158,6 @@ class SophisticatedPrompt(PrompterCommon):
         self.reset_completer(binding)
 
         self.session = self.prompt_session
-
-        # Get the terminal size measure function.
-        self.get_size = self.prompt_session.app.renderer.output.get_size
 
         self.print_text_header()
 
