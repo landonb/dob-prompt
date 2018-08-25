@@ -27,7 +27,7 @@ from prompt_toolkit.history import FileHistory, InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
-from . import PrompterCommon
+from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
 from .. import __BigName__
 from ..cmd_config import get_appdirs_subdir_file_path, AppDirs

@@ -15,29 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with 'dob'.  If not, see <http://www.gnu.org/licenses/>.
 
+""""""
+
 from __future__ import absolute_import, unicode_literals
 
-from .prompter_common import PrompterCommon
-from .prompt_actegory import PromptForActegory
-from .prompt_tagcloud import PromptForMoreTags
-
 __all__ = [
-    'AwesomePrompt',
+    'PrompterCommon',
 ]
 
 
-class AwesomePrompt(PrompterCommon):
+class PrompterCommon(object):
     """
     """
-
-    def __init__(self, controller):
-        super(AwesomePrompt, self).__init__()
-        self.prompt_actegory = PromptForActegory(controller)
-        self.prompt_for_tags = PromptForMoreTags(controller)
 
     def ask_act_cat(self, filter_activity, filter_category):
-        return self.prompt_actegory.ask_act_cat(filter_activity, filter_category)
+        raise NotImplementedError
 
     def ask_for_tags(self, already_selected, activity):
-        return self.prompt_for_tags.ask_for_tags(already_selected, activity)
+        raise NotImplementedError
 
