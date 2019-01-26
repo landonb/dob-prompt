@@ -94,8 +94,12 @@ class KeyBond(KeyCodeBriefly):
     def __init__(
         self,
         keycode,
-        brief,
-        action,
+        brief=None,
+        # NOTE/2018-08-25: (lb): action should really not be None, but I
+        # wanted to make brief optional, and I didn't want to edit all the
+        # callers yet (to rearrange parameters).
+        #   FIXME/MAYBE: Fix callers and make action required param again.
+        action=None,
         wordy='',
         **kwargs
     ):
