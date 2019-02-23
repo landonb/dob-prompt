@@ -20,6 +20,7 @@ from __future__ import absolute_import, unicode_literals
 from collections import namedtuple
 
 from gettext import gettext as _
+
 from prompt_toolkit import PromptSession, print_formatted_text
 from prompt_toolkit.auto_suggest import AutoSuggest
 from prompt_toolkit.formatted_text import FormattedText

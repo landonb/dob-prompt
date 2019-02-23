@@ -20,11 +20,11 @@
 from __future__ import absolute_import, unicode_literals
 
 from gettext import gettext as _
+
+from inflector import English, Inflector
 from pedantic_timedelta import PedanticTimedelta
 from prompt_toolkit.auto_suggest import Suggestion
 from prompt_toolkit.completion import WordCompleter
-
-from inflector import English, Inflector
 
 __all__ = [
     'FactPartCompleterSuggester',
