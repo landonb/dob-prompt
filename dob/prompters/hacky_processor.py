@@ -19,9 +19,9 @@ from __future__ import absolute_import, unicode_literals
 
 from prompt_toolkit.layout.processors import Processor, Transformation
 
-__all__ = [
+__all__ = (
     'HackyProcessor',
-]
+)
 
 
 class HackyProcessor(Processor):

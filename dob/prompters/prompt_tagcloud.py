@@ -26,11 +26,11 @@ from .parts_suggester import FactPartCompleterSuggester
 from .sophisti_prompt import SophisticatedPrompt
 from .the_bottom_area import BottomBarArea
 
-__all__ = [
+__all__ = (
     'PromptForMoreTags',
     # Private:
     #   'TagCloudBottomBarArea',
-]
+)
 
 
 class PromptForMoreTags(SophisticatedPrompt):

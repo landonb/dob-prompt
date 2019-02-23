@@ -21,9 +21,9 @@ from .prompt_actegory import PromptForActegory
 from .prompt_tagcloud import PromptForMoreTags
 from .prompter_common import PrompterCommon
 
-__all__ = [
+__all__ = (
     'AwesomePrompt',
-]
+)
 
 
 class AwesomePrompt(PrompterCommon):

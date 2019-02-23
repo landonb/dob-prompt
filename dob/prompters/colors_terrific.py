@@ -19,11 +19,11 @@ from __future__ import absolute_import, unicode_literals
 
 from .interface_bases import InterfaceStyle
 
-__all__ = [
+__all__ = (
     'TerrificColors1',
     'TerrificColors2',
     'TerrificColors3',
-]
+)
 
 
 class TerrificColors1(InterfaceStyle):

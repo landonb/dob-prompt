@@ -21,11 +21,11 @@ import six
 
 from .interface_bases import InterfaceBuilder, InterfaceSection
 
-__all__ = [
+__all__ = (
     'BindingsBarBuilder',
     # Private:
     #   'BindingsSection',
-]
+)
 
 
 # ***

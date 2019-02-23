@@ -22,9 +22,9 @@ from prompt_toolkit.formatted_text import FormattedText
 
 from .interface_crown import BannerBarBuilder
 
-__all__ = [
+__all__ = (
     'BannerBarArea',
-]
+)
 
 
 class BannerBarArea(object):

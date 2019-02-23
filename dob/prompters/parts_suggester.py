@@ -26,9 +26,9 @@ from pedantic_timedelta import PedanticTimedelta
 from prompt_toolkit.auto_suggest import Suggestion
 from prompt_toolkit.completion import WordCompleter
 
-__all__ = [
+__all__ = (
     'FactPartCompleterSuggester',
-]
+)
 
 
 class FactPartCompleterSuggester(WordCompleter):

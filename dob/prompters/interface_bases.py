@@ -17,11 +17,11 @@
 
 from __future__ import absolute_import, unicode_literals
 
-__all__ = [
+__all__ = (
     'InterfaceBuilder',
     'InterfaceSection',
     'InterfaceStyle',
-]
+)
 
 
 class InterfaceStyle(object):

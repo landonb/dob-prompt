@@ -28,13 +28,13 @@ from .parts_suggester import FactPartCompleterSuggester
 from .sophisti_prompt import SophisticatedPrompt
 from .the_bottom_area import BottomBarArea
 
-__all__ = [
+__all__ = (
     'PromptForActegory',
     # Private:
     #   'ActegoryCompleterSuggester',
     #   'ActegoryHackyProcessor',
     #   'ActegoryBottomBarArea',
-]
+)
 
 
 class PromptForActegory(SophisticatedPrompt):

@@ -34,11 +34,11 @@ from ..helpers.path import touch
 from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
 
-__all__ = [
+__all__ = (
     'SophisticatedPrompt',
     # Private:
     #  'HamsterPartAutoSuggest',
-]
+)
 
 
 class HamsterPartAutoSuggest(AutoSuggest):

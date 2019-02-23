@@ -19,11 +19,11 @@ from __future__ import absolute_import, unicode_literals
 
 from .interface_bases import InterfaceBuilder, InterfaceSection
 
-__all__ = [
+__all__ = (
     'BannerBarBuilder',
     # Private:
     #   'BannerSection',
-]
+)
 
 
 class BannerSection(InterfaceSection):

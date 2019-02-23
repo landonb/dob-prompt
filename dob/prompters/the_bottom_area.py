@@ -25,9 +25,9 @@ from prompt_toolkit.styles import Style
 from .interface_bonds import KeyBond
 from .interface_fanny import BindingsBarBuilder
 
-__all__ = [
+__all__ = (
     'BottomBarArea',
-]
+)
 
 
 # ***

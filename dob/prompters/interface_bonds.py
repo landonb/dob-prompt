@@ -19,11 +19,11 @@ from __future__ import absolute_import, unicode_literals
 
 import six
 
-__all__ = [
+__all__ = (
     'KeyBond',
     # Private:
     #   'KeyCodeBriefly',
-]
+)
 
 
 class KeyCodeBriefly(object):
