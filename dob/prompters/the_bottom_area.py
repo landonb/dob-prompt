@@ -18,9 +18,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from gettext import gettext as _
+from prompt_toolkit.styles import Style
 
 import six
-from prompt_toolkit.styles import Style
 
 from .interface_bonds import KeyBond
 from .interface_fanny import BindingsBarBuilder

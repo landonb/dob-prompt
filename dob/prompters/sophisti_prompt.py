@@ -17,9 +17,9 @@
 
 from __future__ import absolute_import, unicode_literals
 
-from gettext import gettext as _
-
 from collections import namedtuple
+
+from gettext import gettext as _
 from prompt_toolkit import PromptSession, print_formatted_text
 from prompt_toolkit.auto_suggest import AutoSuggest
 from prompt_toolkit.formatted_text import FormattedText
@@ -27,11 +27,11 @@ from prompt_toolkit.history import FileHistory, InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
+from .. import __package_name__
+from ..cmd_config import AppDirs, get_appdirs_subdir_file_path
+from ..helpers.path import touch
 from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
-from .. import __package_name__
-from ..cmd_config import get_appdirs_subdir_file_path, AppDirs
-from ..helpers.path import touch
 
 __all__ = [
     'SophisticatedPrompt',

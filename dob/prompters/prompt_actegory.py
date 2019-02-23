@@ -18,7 +18,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from gettext import gettext as _
-
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput, Transformation
 
 from .colors_terrific import TerrificColors1
