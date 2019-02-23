@@ -29,7 +29,7 @@ from prompt_toolkit.shortcuts import CompleteStyle
 
 from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
-from .. import __BigName__
+from .. import __package_name__
 from ..cmd_config import get_appdirs_subdir_file_path, AppDirs
 from ..helpers.path import touch
 
@@ -72,7 +72,7 @@ class SophisticatedPrompt(PrompterCommon):
 
     @property
     def bannerbar_title(self):
-        return __BigName__
+        return __package_name__
 
     @property
     def colors(self):
