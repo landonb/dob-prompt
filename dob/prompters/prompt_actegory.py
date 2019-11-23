@@ -127,7 +127,8 @@ class PromptForActegory(SophisticatedPrompt):
             self.restrict_category = False
         elif SEP in text:
             # FIXME/2019-11-23: Support "quoted names"@"foo bar"?
-            self.activity, self.category = text.split(SEP)
+            #                   For now, split at first separator.
+            self.activity, self.category = text.split(SEP, 1)
             if not self.category:
                 # Prepare to prompt again, for category.
                 self.restrict_category = True
@@ -193,7 +194,9 @@ class PromptForActegory(SophisticatedPrompt):
         self.debug('')
         entry_name = entry
         if self.restrict_category and SEP in entry:
-            _activity_name, category_name = entry.split(SEP)
+            # FIXME/2019-11-23: Support "quoted names"@"foo bar"?
+            #                   For now, split at first separator.
+            _activity_name, category_name = entry.split(SEP, 1)
             if category_name in names:
                 entry_name = None
             else:
