@@ -37,6 +37,9 @@ __all__ = (
 )
 
 
+SEP = '@'
+
+
 class PromptForActegory(SophisticatedPrompt):
     """
     """
@@ -66,7 +69,7 @@ class PromptForActegory(SophisticatedPrompt):
 
     @property
     def type_request(self):
-        return _('Enter an Activity@Category')
+        return _('Enter an Activity{}Category').format(SEP)
 
     def init_completer(self):
         return ActegoryCompleterSuggester(self.summoned)
@@ -108,8 +111,9 @@ class PromptForActegory(SophisticatedPrompt):
     def prompt_for_actegory(self):
         default = ''
         if self.activity and self.category:
-            default = '{}@{}'.format(self.activity, self.category)
+            default = '{}{}{}'.format(self.activity, SEP, self.category)
         text = self.session_prompt(default=default)
+
         self.process_user_reponse(text)
         # Prepare to run again, if necessary.
         #  And start with completions open.
@@ -121,13 +125,14 @@ class PromptForActegory(SophisticatedPrompt):
             self.category = text
             # If we prompt again, show activities.
             self.restrict_category = False
-        elif '@' in text:
-            self.activity, self.category = text.split('@')
+        elif SEP in text:
+            # FIXME/2019-11-23: Support "quoted names"@"foo bar"?
+            self.activity, self.category = text.split(SEP)
             if not self.category:
                 # Prepare to prompt again, for category.
                 self.restrict_category = True
         else:
-            # No '@', so assume just the activity.
+            # No '@' (SEP), so assume just the activity.
             self.activity = text
             # If we prompt again, show categories.
             self.restrict_category = True
@@ -179,14 +184,16 @@ class PromptForActegory(SophisticatedPrompt):
         return category
 
     def hydrate_completer(self, results):
+        self.debug('')
         self.completer.hydrate(
             results, skip_category_name=bool(self.category),
         )
 
     def history_entry_name(self, entry, names):
+        self.debug('')
         entry_name = entry
-        if self.restrict_category and '@' in entry:
-            _activity_name, category_name = entry.split('@')
+        if self.restrict_category and SEP in entry:
+            _activity_name, category_name = entry.split(SEP)
             if category_name in names:
                 entry_name = None
             else:
@@ -202,7 +209,7 @@ class ActegoryCompleterSuggester(FactPartCompleterSuggester):
         name = item.name
         if not skip_category_name:
             try:
-                name = '{}@{}'.format(item.name, item.category.name)
+                name = '{}{}{}'.format(item.name, SEP, item.category.name)
             except AttributeError:
                 pass
         return name
@@ -214,22 +221,29 @@ class ActegoryHackyProcessor(HackyProcessor):
 
     def __init__(self, prompter):
         super(ActegoryHackyProcessor, self).__init__(prompter)
-        self.before_input = BeforeInput(text='@')
-        self.after_input = AfterInput(text='@')
+        self.before_input = BeforeInput(text=SEP)
+        self.after_input = AfterInput(text=SEP)
 
     def __repr__(self):
         return 'ActegoryHackyProcessor(%r)' % (self.prompter)
 
     def apply_transformation(self, transformation_input):
+        self.prompter.debug(
+            'rstrct_cat: {} / cat: {} / act: {}'.format(
+                self.prompter.restrict_category,
+                self.prompter.category,
+                self.prompter.activity,
+            )
+        )
         self.mark_summoned(transformation_input)
 
         if self.prompter.restrict_category:
-            text = '{}@'.format(self.prompter.activity)
+            text = '{}{}'.format(self.prompter.activity, SEP)
             self.before_input.text = text
             return self.before_input.apply_transformation(transformation_input)
 
         if self.prompter.category and not self.prompter.activity:
-            text = '@{}'.format(self.prompter.category)
+            text = '{}{}'.format(SEP, self.prompter.category)
             self.after_input.text = text
             return self.after_input.apply_transformation(transformation_input)
 
