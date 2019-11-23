@@ -251,7 +251,9 @@ class BottomBarArea(object):
         #       (Also, Alt-c is mapped to opening the completion dropdown.)
 
         return KeyBond(
-            ('escape', 'i'),
+            # (lb): Used to use escape code, not sure why/when stopped working:
+            #  ('escape', 'i'),
+            ('m-i',),
             brief_ignore_case,
             handle_ignore_case,
             briefs=[_('case'), _('Case')],
@@ -272,7 +274,9 @@ class BottomBarArea(object):
             return brief
 
         return KeyBond(
-            ('escape', 'm'),
+            # (lb): Used to use escape code, not sure why/when stopped working:
+            #  ('escape', 'm'),
+            ('m-m',),
             brief_match_middle,
             handle_match_middle,
             briefs=[_('middle'), _('start')],

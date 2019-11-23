@@ -77,6 +77,9 @@ class KeyCodeBriefly(object):
     def key_hint(self):
         if isinstance(self.keycode, six.text_type):
             key_hint = self.keycode.upper()
+        elif len(self.keycode) == 1:
+            # E.g., 'm-h' → 'M-h'.
+            key_hint = self.keycode[0].capitalize()
         else:
             assert len(self.keycode) == 2
             assert self.keycode[0] == 'escape'
