@@ -63,7 +63,7 @@ class PromptForMoreTags(SophisticatedPrompt):
         return TerrificColors2()
 
     @property
-    def fact_part_friendly(self):
+    def edit_part_type(self):
         return 'tag'
 
     @property

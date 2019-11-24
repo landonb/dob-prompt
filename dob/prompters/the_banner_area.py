@@ -221,7 +221,7 @@ class BannerBarArea(object):
 
     def help_section_text(self):
         help_text = self.help_pages[self.help_page_number].format(
-            part_type=self.prompter.fact_part_friendly,
+            part_type=self.prompter.edit_part_type,
         )
         return help_text
 

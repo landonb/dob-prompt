@@ -187,14 +187,15 @@ class PromptForActegory(SophisticatedPrompt):
         return TerrificColors1()
 
     @property
-    def fact_part_friendly(self):
+    def edit_part_type(self):
         if not self.lock_act:
             # (lb): Just say 'activity', and not
             # the more-correct 'activity@category'.
-            part_name = _('activity')
+            part_meta = _('activity')
         else:
-            part_name = _('category')
-        return part_name
+            part_meta = _('category')
+        return part_meta
+
 
     @property
     def history_topic(self):
@@ -219,7 +220,7 @@ class PromptForActegory(SophisticatedPrompt):
     def prompt_for_what(self, max_col=0):
         prefix = '  '
 
-        what = self.fact_part_friendly.capitalize()
+        what = self.edit_part_type.capitalize()
         if not self.lock_act:
             hint = _('Enter the {} followed by `@` or ENTER').format(what)
         else:
@@ -438,7 +439,7 @@ class ActegoryBottomBarArea(BottomBarArea):
 
     def init_hooks_filter(self):
         def brief_scope(binding):
-            return self.prompter.fact_part_friendly
+            return self.prompter.edit_part_type
 
         # Option to switch between cats and acts.
         self.filter_bindings = [
@@ -474,7 +475,7 @@ class ActegoryValidator(Validator):
         self.prompt.debug('text: {}'.format(text))
 
         message = _('Type `{}` or press ENTER to finish {} name').format(
-            self.prompt.sep, self.prompt.fact_part_friendly.capitalize()
+            self.prompt.sep, self.prompt.edit_part_type.capitalize()
         )
 
         # Use ValidationError to show message in bottom-left of prompt

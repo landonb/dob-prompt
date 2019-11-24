@@ -82,7 +82,7 @@ class SophisticatedPrompt(PrompterCommon):
         raise NotImplementedError
 
     @property
-    def fact_part_friendly(self):
+    def edit_part_type(self):
         raise NotImplementedError
 
     @property
