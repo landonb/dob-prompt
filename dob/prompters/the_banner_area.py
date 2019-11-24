@@ -49,15 +49,22 @@ class BannerBarArea(object):
         self.build_builder()
 
     def wire_hooks(self, key_bindings):
+        """Hook backspace methods, for magic"""
+        # Press 'Alt-h' to cycle through help lines.
         self.wire_hook_help(key_bindings)
-        self.wire_hook_escape(key_bindings)
-        self.wire_hook_ctrl_q(key_bindings)
-        # Hook backspace methods, for magic.
-        self.wire_hook_backspace(key_bindings)
-        self.wire_hook_ctrl_l(key_bindings)
-        self.wire_hook_ctrl_s(key_bindings)
-        self.wire_hook_ctrl_w(key_bindings)
+        # Press ESCAPE or 'Ctrl-z' to hard-undo (all) edits
+        # (restore initial Activity and Category prompt).
         self.wire_hook_ctrl_z(key_bindings)
+        self.wire_hook_escape(key_bindings)
+        # Press Backspace, Ctrl-w, Ctrl-Backspace, to delete a
+        # single character, a single character, or the whole
+        # Activity or Category (but not both), respectively.
+        self.wire_hook_backspace(key_bindings)
+        self.wire_hook_ctrl_w(key_bindings)
+        self.wire_hook_ctrl_l(key_bindings)
+        # Use Ctrl-s and Ctrl-q for ...
+        self.wire_hook_ctrl_s(key_bindings)
+        self.wire_hook_ctrl_q(key_bindings)
 
     def wire_hook_help(self, key_bindings):
         # HEH!/2019-11-23: (lb): The old code stopped working, not sure
@@ -95,6 +102,23 @@ class BannerBarArea(object):
                 return update_wrapper(_bubble_basic_binding, func)
             return _bubble_basic_decorator
 
+    def wire_hook_ctrl_z(self, key_bindings):
+        keycode = ('c-z',)
+
+        # (lb): A purist might suggest that a Ctrl-z literally be echoed,
+        # but I think frantic persons will appreciate an obvious recovery
+        # mechanism.
+        def handler(event):
+            self.prompter.handle_escape_hatch(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_escape(self, key_bindings):
+        keycode = ('escape',)
+
+        def handler(event):
+            self.prompter.handle_escape_hatch(event)
+        key_bindings.add(*keycode)(handler)
+
     # Wire all three related Backspace bindings: Backspace, Ctrl-Backspace, Ctrl-h.
     def wire_hook_backspace(self, key_bindings):
         # Note that POSIX reports Ctrl-Backspace as '\x08', just like Ctrl-h.
@@ -125,6 +149,14 @@ class BannerBarArea(object):
 
         key_bindings.add(*keycode)(handler)
 
+    def wire_hook_ctrl_w(self, key_bindings):
+        keycode = ('c-w',)
+
+        @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
+        def handler(event):
+            return self.prompter.handle_word_rubout(event)
+        key_bindings.add(*keycode)(handler)
+
     def wire_hook_ctrl_l(self, key_bindings):
         keycode = ('c-l',)
 
@@ -135,6 +167,10 @@ class BannerBarArea(object):
         def handler(event):
             self.prompter.handle_clear_screen(event)
         key_bindings.add(*keycode)(handler)
+
+    # SKIP: ('delete',), ('c-delete',), and ('c-d',).
+    # - Both call 'delete-char' basic binding, which deletes next character,
+    # and is not interesting to us.
 
     def wire_hook_ctrl_s(self, key_bindings):
         keycode = ('c-s',)
@@ -147,40 +183,11 @@ class BannerBarArea(object):
             self.prompter.handle_ctrl_s(event)
         key_bindings.add(*keycode)(handler)
 
-    # SKIP: ('delete',), ('c-delete',), and ('c-d',).
-    # - Both call 'delete-char' basic binding, which deletes next character,
-    # and is not interesting to us.
-
-    def wire_hook_ctrl_w(self, key_bindings):
-        keycode = ('c-w',)
-
-        @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
-        def handler(event):
-            return self.prompter.handle_word_rubout(event)
-        key_bindings.add(*keycode)(handler)
-
-    def wire_hook_escape(self, key_bindings):
-        keycode = ('escape',)
-
-        def handler(event):
-            self.prompter.handle_escape_hatch(event)
-        key_bindings.add(*keycode)(handler)
-
     def wire_hook_ctrl_q(self, key_bindings):
         keycode = ('c-q',)
 
         def handler(event):
             self.prompter.controller.client_logger.debug('FIXME: c-q')
-        key_bindings.add(*keycode)(handler)
-
-    def wire_hook_ctrl_z(self, key_bindings):
-        keycode = ('c-z',)
-
-        # (lb): A purist might suggest that a Ctrl-z literally be echoed,
-        # but I think frantic persons will appreciate an obvious recovery
-        # mechanism.
-        def handler(event):
-            self.prompter.handle_escape_hatch(event)
         key_bindings.add(*keycode)(handler)
 
     # ***
