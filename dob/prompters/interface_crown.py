@@ -33,7 +33,7 @@ class BannerSection(InterfaceSection):
     def __init__(self, content, max_width, term_width=0, colors=None):
         super(BannerSection, self).__init__(colors=colors)
         self.content = content
-        gutter_width = 4  # E.g., '┃ ' ... ' ┃'
+        gutter_width = 4  # I.e., len('┃ ' ... ' ┃')
         self.stretch_width = max_width - gutter_width
         self.term_width = term_width
 
@@ -112,13 +112,15 @@ class BannerBarBuilder(InterfaceBuilder):
             # because separate lines.
             self.sections.append(section)
 
-    @property
-    def parts(self):
+    def parts(self, prompt):
         if self._parts:
             return self._parts
         for idx, section in enumerate(self.sections):
             self._parts += section.render(idx)
             self._parts.append(('', '\n'))
+        if self._parts:
+            _dont_want_last_newline = self._parts.pop()
+            self._parts.extend(prompt.prompt_for_what())
         return self._parts
 
     # (lb): This is a <hack> for updating the banner inline (without me

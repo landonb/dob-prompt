@@ -17,8 +17,16 @@
 
 from __future__ import absolute_import, unicode_literals
 
+from functools import update_wrapper
+
 from prompt_toolkit import print_formatted_text
 from prompt_toolkit.formatted_text import FormattedText
+# We override some basic bindings below to detect not standard event,
+# like the user pressing backspace on an already empty text field,
+# an event which PPT does not bother the validator with.
+# - To see where get_by_name() calls are mimicked from, open:
+#   python-prompt-toolkit/prompt_toolkit/key_binding/bindings/basic.py
+from prompt_toolkit.key_binding.bindings.named_commands import get_by_name
 
 from .interface_crown import BannerBarBuilder
 
@@ -42,6 +50,14 @@ class BannerBarArea(object):
 
     def wire_hooks(self, key_bindings):
         self.wire_hook_help(key_bindings)
+        self.wire_hook_escape(key_bindings)
+        self.wire_hook_ctrl_q(key_bindings)
+        # Hook backspace methods, for magic.
+        self.wire_hook_backspace(key_bindings)
+        self.wire_hook_ctrl_l(key_bindings)
+        self.wire_hook_ctrl_s(key_bindings)
+        self.wire_hook_ctrl_w(key_bindings)
+        self.wire_hook_ctrl_z(key_bindings)
 
     def wire_hook_help(self, key_bindings):
         # HEH!/2019-11-23: (lb): The old code stopped working, not sure
@@ -54,11 +70,120 @@ class BannerBarArea(object):
         # which is weird because PPT library is the dob fork, so pinned.
         # Or maybe the 'escape' is a Vim mode thing? Though I tried ESC, m.
         # In any case, the following code is what does work. At least for now.
+        # And note that a simple 'm-h' does not work; stick with tuple.
         keycode = ('m-h',)
 
         def handler(event):
             self.cycle_help(event)
         key_bindings.add(*keycode)(handler)
+
+    # ***
+
+    class Decorators(object):
+        # This is a little layered: Use the basic binding name to create
+        # the decorator, which executes the basic binding after running
+        # our middleware method.
+        @classmethod
+        def bubble_basic_binding(cls, named_command):
+            # cls is Decorators
+            def _bubble_basic_decorator(func, *args, **kwargs):
+                def _bubble_basic_binding(event, *args, **kwargs):
+                    handled = func(event, *args, **kwargs)
+                    if not handled:
+                        basic_binding = get_by_name(named_command)
+                        basic_binding(event)
+                return update_wrapper(_bubble_basic_binding, func)
+            return _bubble_basic_decorator
+
+    # Wire all three related Backspace bindings: Backspace, Ctrl-Backspace, Ctrl-h.
+    def wire_hook_backspace(self, key_bindings):
+        # Note that POSIX reports Ctrl-Backspace as '\x08', just like Ctrl-h.
+        # And a lone Backspace is '\x7f', but PPT says key 'c-h', like C-BS and C-h.
+        keycode = ('c-h',)  # Aka ('backspace',)
+
+        def handler(event):
+            # Backspace (aka rubout) is ASCII 127/DEL. Ctrl-Backspace and C-h are 8.
+            # (lb): I think it's a terminal issue, and not something we can change.
+            # - Backspace: KeyPress(key='c-h', data='\x7f')
+            # - C-BS, C-h: KeyPress(key='c-h', data='\x08')
+            if event.data == '\x7f':
+                # Backspace
+                handled = self.prompter.handle_backspace_delete_char(event)
+                # Kick basic binding.
+                decor = BannerBarArea.Decorators.bubble_basic_binding('backward-delete-char')
+                decor(lambda event: handled)(event)
+            elif event.data == '\x08':
+                # MAYBE: (lb): Would there ever be a case where someone absolutely
+                # must use Ctrl-h to delete single characters? If not, I'd like to
+                # make use Ctrl-Backspace/Ctrl-h for delete all, because I never
+                # use Ctrl-h, and because I want a way to clear the whole input
+                # like.
+                # Skip basic binding.
+                self.prompter.handle_backspace_delete_more(event)
+            else:
+                self.prompter.controller.affirm(False)
+
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_ctrl_l(self, key_bindings):
+        keycode = ('c-l',)
+
+        # The basic binding clears the screen, including our banner!
+        # - So override to just clear the input line.
+        # SKIP:
+        #   @BannerBarArea.Decorators.bubble_basic_binding('clear-screen')
+        def handler(event):
+            self.prompter.handle_clear_screen(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_ctrl_s(self, key_bindings):
+        keycode = ('c-s',)
+
+        # The basic binding performs same action in emacs or vi mode,
+        # search.start_forward_incremental_search, but that feature
+        # seems not as useful as provider left-handed (per QWERTY)
+        # method to save (to complement right-handed ENTER option).
+        def handler(event):
+            self.prompter.handle_ctrl_s(event)
+        key_bindings.add(*keycode)(handler)
+
+    # SKIP: ('delete',), ('c-delete',), and ('c-d',).
+    # - Both call 'delete-char' basic binding, which deletes next character,
+    # and is not interesting to us.
+
+    def wire_hook_ctrl_w(self, key_bindings):
+        keycode = ('c-w',)
+
+        @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
+        def handler(event):
+            return self.prompter.handle_word_rubout(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_escape(self, key_bindings):
+        keycode = ('escape',)
+
+        def handler(event):
+            self.prompter.handle_escape_hatch(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_ctrl_q(self, key_bindings):
+        keycode = ('c-q',)
+
+        def handler(event):
+            self.prompter.controller.client_logger.debug('FIXME: c-q')
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_ctrl_z(self, key_bindings):
+        keycode = ('c-z',)
+
+        # (lb): A purist might suggest that a Ctrl-z literally be echoed,
+        # but I think frantic persons will appreciate an obvious recovery
+        # mechanism.
+        def handler(event):
+            self.prompter.handle_escape_hatch(event)
+        key_bindings.add(*keycode)(handler)
+
+    # ***
 
     def build_builder(self, term_width=0):
         stretch_width = self.prompter.bottombar.builder.first_line_len
@@ -104,8 +229,12 @@ class BannerBarArea(object):
         # The cursor position is relative to the PPT buffer which starts
         # after the prefix we told the prompt to draw.
         restore_column += len(self.prompter.session_prompt_prefix)
+
         # The hack gets hackier: Add one for the '@' if BeforeInput set.
-        restore_column += 1 if self.prompter.restrict_category else 0
+        if self.prompter.lock_act:
+            restore_column += len(self.prompter.activity)
+            restore_column += len(self.prompter.sep)
+
         # The help row is this many rows above the prompt: As many rows as
         # the banner, minus the row that the help is on, plus one row for
         # the blank line between the banner and the prompt.

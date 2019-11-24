@@ -66,8 +66,10 @@ class SophisticatedPrompt(PrompterCommon):
         self.key_bindings = None
         self.session = None
         self.sort_order = None
-        self.restrict_category = False
         self.showing_completions = False
+        # A little hack for cycle_hack: a derived class attribute.
+        # Ideally, we should not have this here, but easier, why not.
+        self.lock_act = False
 
     # ***
 
@@ -166,7 +168,7 @@ class SophisticatedPrompt(PrompterCommon):
 
     @property
     def bottom_toolbar(self):
-        return self.bottombar.builder.parts
+        return self.bottombar.builder.parts(self)
 
     def bottom_toolbar_reset(self):
         self.bottombar.builder.clear()
@@ -176,6 +178,8 @@ class SophisticatedPrompt(PrompterCommon):
 
     def stand_up_banner_and_bottom(self):
         self.key_bindings = KeyBindings()
+        # (lb): 2019-11-23: Just noticed reverse ordered here, not sure if matters
+        # if bottombar stood_up first, or bannerbar, or if It Just Doesn't Matter.
         self.bottombar.stand_up(self.key_bindings)
         self.bannerbar.stand_up(self.key_bindings)
 
@@ -256,7 +260,7 @@ class SophisticatedPrompt(PrompterCommon):
     def print_text_header(self):
         term_width = self.get_size()[1]
         self.bannerbar.build_builder(term_width)
-        parts = self.bannerbar.builder.parts
+        parts = self.bannerbar.builder.parts(self)
         # (lb): Note that we just print the banner to the terminal and
         # forget about it, i.e., this text is not managed by the PPT.
         # (We do, however, edit the help text line if the user cycles
@@ -309,6 +313,20 @@ class SophisticatedPrompt(PrompterCommon):
             history=self.history,
             enable_history_search=self.enable_history_search,
             auto_suggest=HamsterPartAutoSuggest(self.completer),
+
+            # (lb): 2019-11-23: Until now, this call had not been specifying
+            # vi_mode, so PPT defaults to emacs. However, this makes capturing
+            # 'escape' frustratingly slow. Notably, PPT's default emacs mode
+            # wires a bunch of two-key 'escape' bindings (you know emacs!).
+            # As such, PPT has to wait a hot mo. after the user presses the
+            # escape key once to see if the user presses another key that after
+            # it that matches one of the registered two-key bindings.
+            # - The time between pressing 'escape' and the callback being
+            # invoked is a little faster with vi_mode than without (emacs).
+            # - However, you can still sense a delay with vi_mode. But if
+            # you hit Ctrl-z instead, the callback is invoked immediately
+            # (so if you want a prompt prompt undo, use Ctrl-Z, not Escape!).
+            vi_mode=True,
         )
         return session
 
@@ -318,7 +336,8 @@ class SophisticatedPrompt(PrompterCommon):
 
     # Called in a loop by the actegory- or tagcloud-asker, either until
     # valid actegory entered, or until user is finished entering tags.
-    def session_prompt(self, default=''):
+    def session_prompt(self, default='', validator=None):
+        validate_while_typing = validator is not None
         text = self.session.prompt(
             self.session_prompt_prefix,
             default=default,
@@ -338,6 +357,9 @@ class SophisticatedPrompt(PrompterCommon):
             key_bindings=self.key_bindings,
 
             style=self.bottombar.prompt_style,
+
+            validate_while_typing=validate_while_typing,
+            validator=validator,
         )
 
         return text
@@ -387,4 +409,33 @@ class SophisticatedPrompt(PrompterCommon):
             appdirs_dir=AppDirs.user_cache_dir,
         )
         return hist_path
+
+    # ***
+
+    @property
+    def sep(self):
+        # A little derived class knowledge bleed. (SophisticatedPrompt should
+        # not know about this value used by a derived class, PromptForActegory,
+        # but not by the other derived class, PromptForMoreTags. But it makes
+        # some magic easier to do this.)
+        return ''
+
+    def handle_backspace_delete_char(self, event):
+        pass
+
+    def handle_backspace_delete_more(self, event):
+        pass
+
+    def handle_clear_screen(self, event):
+        # FIXME/2019-11-23 18:03: Ensure happens for tags, too.
+        pass
+
+    def handle_word_rubout(self, event):
+        pass
+
+    def handle_escape_hatch(self, event):
+        pass
+
+    def handle_ctrl_s(self, event):
+        pass
 

@@ -182,8 +182,7 @@ class BindingsBarBuilder(InterfaceBuilder):
 
     # ***
 
-    @property
-    def parts(self):
+    def parts(self, prompt=None):
         if self._parts:
             return self._parts
         self.assemble_parts_rows()
@@ -216,7 +215,7 @@ class BindingsBarBuilder(InterfaceBuilder):
     @property
     def first_line_len(self):
         line_width = 0
-        for part in self.parts:
+        for part in self.parts():
             lines = part[1].split('\n', 2)
             line_width += len(lines[0])
             if len(lines) == 2:
