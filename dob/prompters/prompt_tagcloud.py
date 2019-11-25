@@ -40,6 +40,7 @@ class PromptForMoreTags(SophisticatedPrompt):
     def __init__(self, controller):
         super(PromptForMoreTags, self).__init__(controller)
         self.activity = None
+        # MAYBE/2019-11-24: (lb): Use OrderedDict? We could preserve tag ordering?? ha!
         self.tags_cache = {}
 
     @property
@@ -65,6 +66,10 @@ class PromptForMoreTags(SophisticatedPrompt):
     @property
     def edit_part_type(self):
         return 'tag'
+
+    @property
+    def edit_part_text(self):
+        return str(self.tags_cache)
 
     @property
     def history_topic(self):

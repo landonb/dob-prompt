@@ -86,6 +86,10 @@ class SophisticatedPrompt(PrompterCommon):
         raise NotImplementedError
 
     @property
+    def edit_part_text(self):
+        raise NotImplementedError
+
+    @property
     def history_topic(self):
         raise NotImplementedError
 
@@ -372,20 +376,21 @@ class SophisticatedPrompt(PrompterCommon):
 
     # ***
 
-    def restart_completer(self, event, binding=None, toggle_ok=False):
+    def restart_completer(self, event=None, binding=None, toggle_ok=False):
         # (lb): Docs indicate set_completions is part of buffer, but not so:
         #   NOPE: event.app.current_buffer.set_completions(completions=...)
         # Docs also say start_completion part of CLI object, but it's in buffer?
         #  In any case, cancel the current completion, and start a new one.
         self.showing_completions = True
-        if event.app.current_buffer.complete_state:
-            event.app.current_buffer.cancel_completion()
-        else:
-            # Only happens first time user presses F-key,
-            #  if they haven't already pressed <TAB>.
-            toggle_ok = False
+        if event is not None:
+            if event.app.current_buffer.complete_state:
+                event.app.current_buffer.cancel_completion()
+            else:
+                # Only happens first time user presses F-key,
+                #  if they haven't already pressed <TAB>.
+                toggle_ok = False
         self.reset_completer(binding=binding, toggle_ok=toggle_ok)
-        if self.showing_completions:
+        if event is not None and self.showing_completions:
             event.app.current_buffer.start_completion()
 
     # ***
@@ -420,22 +425,37 @@ class SophisticatedPrompt(PrompterCommon):
         # some magic easier to do this.)
         return ''
 
+    # FIXME/2019-11-23: See what below needs to happen for tags prompt, too.
+
     def handle_backspace_delete_char(self, event):
-        pass
+        """Awesome Prompt Backspace handler."""
+        return False
 
     def handle_backspace_delete_more(self, event):
-        pass
+        """Awesome Prompt Ctrl-BS/Ctrl-h handler."""
+        return False
 
     def handle_clear_screen(self, event):
-        # FIXME/2019-11-23 18:03: Ensure happens for tags, too.
-        pass
+        """Awesome Prompt Ctrl-l handler."""
+        return False
 
     def handle_word_rubout(self, event):
-        pass
+        """Awesome Prompt Ctrl-w handler."""
+        return False
 
-    def handle_escape_hatch(self, event):
-        pass
+    def handle_content_reset(self, event):
+        """Awesome Prompt Dramatic Undo handler."""
+        return False
 
-    def handle_ctrl_s(self, event):
-        pass
+    def handle_escape_dismiss(self, event):
+        """Awesome Prompt Dramatic Undo handler."""
+        return False
+
+    def handle_accept_line(self, event):
+        """Awesome Prompt ENTER, etc., handler."""
+        return False
+
+    def handle_menu_complete(self, event):
+        """Awesome Prompt TAB handler."""
+        return False
 

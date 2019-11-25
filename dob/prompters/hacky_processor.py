@@ -54,6 +54,12 @@ class HackyProcessor(Processor):
         # the prompt method. Here, if the prompt was called again
         # automatically, show the autocomplete list automatically, so
         # the user is not confused by the prompt reappeared.
+        #
+        # 2019-11-24: I think this behavior is obsolete, or at least the
+        # comment is misleading, because prompt_for_actegory no longer sets
+        # processor.start_completion = True. I made actegory Awesome Prompt
+        # smarter, so it only runs once and gets both Activity and Category
+        # names, rather than being run twice to get each separately.
         complete_state = self.prompter.session.app.current_buffer.complete_state
 
         if not complete_state and self.start_completion:

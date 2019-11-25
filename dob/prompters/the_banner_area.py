@@ -62,8 +62,15 @@ class BannerBarArea(object):
         self.wire_hook_backspace(key_bindings)
         self.wire_hook_ctrl_w(key_bindings)
         self.wire_hook_ctrl_l(key_bindings)
-        # Use Ctrl-s and Ctrl-q for ...
+        # Use ENTER, Ctrl-s, Ctrl-space to save/lock/commit Activity or Category
+        # (i.e., save Activity and prompt will move on to editing Category;
+        # save Category, and prompt will complete).
         self.wire_hook_ctrl_s(key_bindings)
+        self.wire_hook_ctrl_space(key_bindings)
+        self.wire_hook_enter(key_bindings)
+        # Hook TAB to honor suggestion ahead of completion, Weird PPT!
+        self.wire_hook_tab(key_bindings)
+        # Use Ctrl-q for ...
         self.wire_hook_ctrl_q(key_bindings)
 
     def wire_hook_help(self, key_bindings):
@@ -109,14 +116,14 @@ class BannerBarArea(object):
         # but I think frantic persons will appreciate an obvious recovery
         # mechanism.
         def handler(event):
-            self.prompter.handle_escape_hatch(event)
+            self.prompter.handle_content_reset(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_escape(self, key_bindings):
         keycode = ('escape',)
 
         def handler(event):
-            self.prompter.handle_escape_hatch(event)
+            self.prompter.handle_escape_dismiss(event)
         key_bindings.add(*keycode)(handler)
 
     # Wire all three related Backspace bindings: Backspace, Ctrl-Backspace, Ctrl-h.
@@ -179,8 +186,54 @@ class BannerBarArea(object):
         # search.start_forward_incremental_search, but that feature
         # seems not as useful as provider left-handed (per QWERTY)
         # method to save (to complement right-handed ENTER option).
+        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
         def handler(event):
-            self.prompter.handle_ctrl_s(event)
+            return self.prompter.handle_accept_line(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_ctrl_space(self, key_bindings):
+        keycode = ('c-space',)
+
+        # (lb): Redundant? Both Ctrl-space and Ctrl-s are left-hand
+        # accessible. Do we really need 2 left-hand accessible ENTERs?
+        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        def handler(event):
+            return self.prompter.handle_accept_line(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_enter(self, key_bindings):
+        keycode = ('enter',)
+
+        # The basic PPT 'enter' calls 'accept-line', which is mostly
+        # already wired in our code to be what we want, except we use
+        # a Validator gatekeeper that likes to raise ValidationError
+        # hints. So we need to handle this situation ourselves, to get
+        # around the validator.
+        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        def handler(event):
+            return self.prompter.handle_accept_line(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_tab(self, key_bindings):
+        keycode = ('c-i',)  # Aka 'tab'.
+
+        # (lb): First, I had considered hooking 'tab' (and calling the
+        # 'menu-complete' basic binding if necessary) but I sometimes
+        # double-TAB so triggering ENTER on second TAB could be AWKWARD.
+        #
+        # (lb): Second, on TAB, PPT uses the next item in the completion
+        # list, and *not* the actual suggestion that appears in the input!
+        # Which might be something I'm doing wrong, i.e., I haven't wired
+        # the PPT controls in dob correctly. But it also might not be my
+        # fault. In whatever case, we can at least take ownership here:
+        # - Intercept TAB and prefer using suggestion, not first completion.
+        # - E.g., for me, typing "Po" suggests "ol Time" in gray after the
+        # cursor, but in the completions dropdown below the prompt, the first
+        # entry is "Appointments". Hitting TAB, PPT defaults to completing
+        # with "Appointments" and not "Pool Time", like one would expect!
+        @BannerBarArea.Decorators.bubble_basic_binding('menu-complete')
+        def handler(event):
+            return self.prompter.handle_menu_complete(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_ctrl_q(self, key_bindings):
