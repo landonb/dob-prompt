@@ -202,12 +202,14 @@ class BottomBarArea(object):
     @property
     def meta_sort_by_history(self):
         return KeyBond(
-            # (lb): I like 'history', but 'typed' kinda makes sense,
-            # and it's shorter. And shorter always wins.
+            # (lb): I like 'history', but it's a long word.
+            #       I tried 'typed' for a while as the UX name, but it's
+            #        a mental stretch ("Oh! things I *typed* in the past").
+            #       So let's try 'hist', which is nice and terse.
             'f6',
-            self.meta_sort_briefly(_('typed')),
+            self.meta_sort_briefly(_('hist')),
             action='history',
-            briefs=self.meta_sort_briefs(_('typed')),
+            briefs=self.meta_sort_briefs(_('hist')),
             highlight=self.meta_sort_highlight,
             wordy=_('{types} you have recently entered'),
             sort_order='desc',
