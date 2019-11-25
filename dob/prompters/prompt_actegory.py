@@ -82,7 +82,12 @@ class PromptForActegory(SophisticatedPrompt):
         return boiling_dry
 
     def handle_backspace_delete_char(self, event):
-        return self.boil_dry_on_backspace_if_text_empty(event)
+        boiling_dry = self.boil_dry_on_backspace_if_text_empty(event)
+        if not boiling_dry and event.current_buffer.cursor_position == 0:
+            # Cursor is all the way left... do it do it do it
+            self.toggle_lock_act(event)
+            return True
+        return boiling_dry
 
     def handle_backspace_delete_more(self, event):
         if self.boil_dry_on_backspace_if_text_empty(event):
