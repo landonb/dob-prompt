@@ -66,7 +66,7 @@ class SophisticatedPrompt(PrompterCommon):
         self.key_bindings = None
         self.session = None
         self.sort_order = None
-        self.showing_completions = False
+        self.showing_completions = None
         # A little hack for cycle_hack: a derived class attribute.
         # Ideally, we should not have this here, but easier, why not.
         self.lock_act = False
@@ -342,6 +342,7 @@ class SophisticatedPrompt(PrompterCommon):
     # valid actegory entered, or until user is finished entering tags.
     def session_prompt(self, default='', validator=None):
         validate_while_typing = validator is not None
+
         text = self.session.prompt(
             self.session_prompt_prefix,
             default=default,
@@ -371,8 +372,25 @@ class SophisticatedPrompt(PrompterCommon):
     # ***
 
     def summoned(self, showing_completions):
+        alert_changed = False
+        if self.showing_completions != showing_completions:
+            alert_changed = True
+
         self.showing_completions = showing_completions
+        # Rebuild the bottom_toolbar parts.
+        # MAYBE/2019-11-25: (lb): summoned() is called many times per
+        # input change (i.e., not just once when the user types a character,
+        # but many times). This is probably not a big deal (causes no harm
+        # in code; user does not see slowness); but if you wanted to be
+        # pedantic, you could possibly maybe only build the bottom_toolbar
+        # here if `alert_changed == True`. At least that's my guess today.
         self.session.bottom_toolbar = self.bottom_toolbar
+
+        if alert_changed:
+            self.completions_changed()
+
+    def completions_changed(self):
+        pass
 
     # ***
 
@@ -390,7 +408,7 @@ class SophisticatedPrompt(PrompterCommon):
                 #  if they haven't already pressed <TAB>.
                 toggle_ok = False
         self.reset_completer(binding=binding, toggle_ok=toggle_ok)
-        if event is not None and self.showing_completions:
+        if (event is not None) and self.showing_completions:
             event.app.current_buffer.start_completion()
 
     # ***

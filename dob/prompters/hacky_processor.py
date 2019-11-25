@@ -51,27 +51,50 @@ class HackyProcessor(Processor):
         # (lb): This is such a hack! This is called on prompt startup,
         # and it's the only hook I've figured to use so far to do things
         # that I cannot otherwise do through the session construction, or
-        # the prompt method. Here, if the prompt was called again
-        # automatically, show the autocomplete list automatically, so
-        # the user is not confused by the prompt reappeared.
-        #
-        # 2019-11-24: I think this behavior is obsolete, or at least the
-        # comment is misleading, because prompt_for_actegory no longer sets
-        # processor.start_completion = True. I made actegory Awesome Prompt
-        # smarter, so it only runs once and gets both Activity and Category
-        # names, rather than being run twice to get each separately.
+        # the prompt method.
+
         complete_state = self.prompter.session.app.current_buffer.complete_state
+
+        # *** Optional: Show completions drop down on prompt startup.
+
+        # HISTORIC: (lb): The act@gory prompt used to be called twice
+        # successively, once to get the Activity name, and once to get
+        # the Category name. Before the second prompt session, the code
+        # would ask that the completion dropdown be shown immediately:
+        #     processor.start_completion = True
+        # I've since made the act@gory Awesome Prompt gather both the
+        # Activity and Category names in the same prompt session, so
+        # this behavior is no longer exhibited, but the code remains
+        # right here to start with the completions dropdown visible.
 
         if not complete_state and self.start_completion:
             self.start_completion = False
             transformation_input.buffer_control.buffer.start_completion()
 
-        # (lb): This is also a hack! See if the app is showing the completions
-        # list and redraw the bottom bar accordingly. (I first tried checking
-        # transformation_input.fragments[0][1] == '' but when you cycle through
-        # the completion list, there's an empty string between the start and
-        # the end of the list you can access. So dig deep into the app for the
-        # answer.)
+        # *** Optional: Hook completions drop down showing and hiding.
+
+        # HACKTASTIC: (lb): Our prompter tracks the completions "signal edge".
+        # Specifically, the prompter (more specifically, the validator) cares
+        # when the completions dropdown is hidden, so that it can parse the
+        # input text for the separator ('@') to fiddle with the input state
+        # (which is either asking for the Activity name or asking for the
+        # Category name).
+        #
+        # Within PPT itself, there's a callback, on_completions_changed, but
+        # we cannot influence or access that feature via the PromptSession
+        # interface that Awesome Prompt uses. So we report the state of the
+        # completions dropdown to our prompter, and our prompter tracks the
+        # signal edge (transitions from hiding to showing, and vice versa).
+        # (Note that apply_transformation is called many times per input
+        # character handled, so it's up to the prompter to only react when
+        # the completions state changes, and not on every summoned() call.)
+
+        # *** UX: Update Bottom Bar to accommodate completions drop down.
+
+        # (lb): In addition to watching for completions dropdown state changes,
+        # our prompter also rebuilds the PPT session's bottom_toolbar, whose
+        # state also depends on whether completions are showing or not.
+
         showing_completions = complete_state is not None
         self.prompter.summoned(showing_completions=showing_completions)
 
