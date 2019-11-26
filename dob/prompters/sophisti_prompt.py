@@ -439,6 +439,9 @@ class SophisticatedPrompt(PrompterCommon):
 
     # ***
 
+    def prompt_for_what(self, max_col=0):
+        return ''
+
     @property
     def sep(self):
         # A little derived class knowledge bleed. (SophisticatedPrompt should
