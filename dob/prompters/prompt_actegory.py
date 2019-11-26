@@ -212,6 +212,23 @@ class PromptForActegory(SophisticatedPrompt):
         # list of completions ('menu-complete').
         return False
 
+    def handle_backward_char(self, event):
+        """Awesome Prompt LEFT handler."""
+        if event.current_buffer.cursor_position == 0:
+            self.toggle_lock_act(event)
+            return True
+        return False
+
+    def handle_forward_char(self, event):
+        """Awesome Prompt RIGHT handler."""
+        if event.current_buffer.cursor_position == len(event.current_buffer.text):
+            self.toggle_lock_act(event)
+            # toggle_lock_act puts cursor to right of input, but user pressed
+            # right arrow, so put cursor back to the left instead.
+            event.current_buffer.cursor_position = 0
+            return True
+        return False
+
     def handle_content_reset(self, event):
         self.update_state(self.activity0, self.category0)
         reset_text = self.lock_act and self.category or self.activity

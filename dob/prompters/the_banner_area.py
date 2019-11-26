@@ -70,6 +70,9 @@ class BannerBarArea(object):
         self.wire_hook_enter(key_bindings)
         # Hook TAB to honor suggestion ahead of completion, Weird PPT!
         self.wire_hook_tab(key_bindings)
+        # Make LEFT and RIGHT transition Activity ↔ Category input state.
+        self.wire_hook_left(key_bindings)
+        self.wire_hook_right(key_bindings)
         # Use Ctrl-q for ...
         self.wire_hook_ctrl_q(key_bindings)
 
@@ -234,6 +237,22 @@ class BannerBarArea(object):
         @BannerBarArea.Decorators.bubble_basic_binding('menu-complete')
         def handler(event):
             return self.prompter.handle_menu_complete(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_left(self, key_bindings):
+        keycode = ('left',)
+
+        @BannerBarArea.Decorators.bubble_basic_binding('backward-char')
+        def handler(event):
+            return self.prompter.handle_backward_char(event)
+        key_bindings.add(*keycode)(handler)
+
+    def wire_hook_right(self, key_bindings):
+        keycode = ('right',)
+
+        @BannerBarArea.Decorators.bubble_basic_binding('forward-char')
+        def handler(event):
+            return self.prompter.handle_forward_char(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_ctrl_q(self, key_bindings):

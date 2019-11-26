@@ -476,3 +476,11 @@ class SophisticatedPrompt(PrompterCommon):
         """Awesome Prompt TAB handler."""
         return False
 
+    def handle_backward_char(self, event):
+        """Awesome Prompt LEFT handler."""
+        return False
+
+    def handle_forward_char(self, event):
+        """Awesome Prompt RIGHT handler."""
+        return False
+
