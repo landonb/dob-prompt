@@ -379,22 +379,14 @@ class SophisticatedPrompt(PrompterCommon):
         alert_changed = False
         if self.showing_completions != showing_completions:
             alert_changed = True
-
         self.showing_completions = showing_completions
-        # Rebuild the bottom_toolbar parts.
-        # MAYBE/2019-11-25: (lb): summoned() is called many times per
-        # input change (i.e., not just once when the user types a character,
-        # but many times). This is probably not a big deal (causes no harm
-        # in code; user does not see slowness); but if you wanted to be
-        # pedantic, you could possibly maybe only build the bottom_toolbar
-        # here if `alert_changed == True`. At least that's my guess today.
-        self.session.bottom_toolbar = self.bottom_toolbar
-
         if alert_changed:
             self.completions_changed()
 
     def completions_changed(self):
-        pass
+        # Refresh the bottom toolbar, whose state reflects state of completions.
+        self.bottombar.builder.clear()
+        self.session.bottom_toolbar = self.bottom_toolbar
 
     # ***
 
