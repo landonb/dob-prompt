@@ -39,8 +39,8 @@ class BannerBarArea(object):
     """
     """
 
-    def __init__(self, prompter):
-        self.prompter = prompter
+    def __init__(self, prompt):
+        self.prompt = prompt
         self.help_page_number = 0
         self.assemble_hints()
 
@@ -119,14 +119,14 @@ class BannerBarArea(object):
         # but I think frantic persons will appreciate an obvious recovery
         # mechanism.
         def handler(event):
-            self.prompter.handle_content_reset(event)
+            self.prompt.handle_content_reset(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_escape(self, key_bindings):
         keycode = ('escape',)
 
         def handler(event):
-            self.prompter.handle_escape_dismiss(event)
+            self.prompt.handle_escape_dismiss(event)
         key_bindings.add(*keycode)(handler)
 
     # Wire all three related Backspace bindings: Backspace, Ctrl-Backspace, Ctrl-h.
@@ -142,7 +142,7 @@ class BannerBarArea(object):
             # - C-BS, C-h: KeyPress(key='c-h', data='\x08')
             if event.data == '\x7f':
                 # Backspace
-                handled = self.prompter.handle_backspace_delete_char(event)
+                handled = self.prompt.handle_backspace_delete_char(event)
                 # Kick basic binding.
                 decor = BannerBarArea.Decorators.bubble_basic_binding('backward-delete-char')
                 decor(lambda event: handled)(event)
@@ -153,9 +153,9 @@ class BannerBarArea(object):
                 # use Ctrl-h, and because I want a way to clear the whole input
                 # like.
                 # Skip basic binding.
-                self.prompter.handle_backspace_delete_more(event)
+                self.prompt.handle_backspace_delete_more(event)
             else:
-                self.prompter.controller.affirm(False)
+                self.prompt.controller.affirm(False)
 
         key_bindings.add(*keycode)(handler)
 
@@ -164,7 +164,7 @@ class BannerBarArea(object):
 
         @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
         def handler(event):
-            return self.prompter.handle_word_rubout(event)
+            return self.prompt.handle_word_rubout(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_ctrl_l(self, key_bindings):
@@ -175,7 +175,7 @@ class BannerBarArea(object):
         # SKIP:
         #   @BannerBarArea.Decorators.bubble_basic_binding('clear-screen')
         def handler(event):
-            self.prompter.handle_clear_screen(event)
+            self.prompt.handle_clear_screen(event)
         key_bindings.add(*keycode)(handler)
 
     # SKIP: ('delete',), ('c-delete',), and ('c-d',).
@@ -191,7 +191,7 @@ class BannerBarArea(object):
         # method to save (to complement right-handed ENTER option).
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
         def handler(event):
-            return self.prompter.handle_accept_line(event)
+            return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_ctrl_space(self, key_bindings):
@@ -201,7 +201,7 @@ class BannerBarArea(object):
         # accessible. Do we really need 2 left-hand accessible ENTERs?
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
         def handler(event):
-            return self.prompter.handle_accept_line(event)
+            return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_enter(self, key_bindings):
@@ -214,7 +214,7 @@ class BannerBarArea(object):
         # around the validator.
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
         def handler(event):
-            return self.prompter.handle_accept_line(event)
+            return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_tab(self, key_bindings):
@@ -236,7 +236,7 @@ class BannerBarArea(object):
         # with "Appointments" and not "Pool Time", like one would expect!
         @BannerBarArea.Decorators.bubble_basic_binding('menu-complete')
         def handler(event):
-            return self.prompter.handle_menu_complete(event)
+            return self.prompt.handle_menu_complete(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_left(self, key_bindings):
@@ -244,7 +244,7 @@ class BannerBarArea(object):
 
         @BannerBarArea.Decorators.bubble_basic_binding('backward-char')
         def handler(event):
-            return self.prompter.handle_backward_char(event)
+            return self.prompt.handle_backward_char(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_right(self, key_bindings):
@@ -252,7 +252,7 @@ class BannerBarArea(object):
 
         @BannerBarArea.Decorators.bubble_basic_binding('forward-char')
         def handler(event):
-            return self.prompter.handle_forward_char(event)
+            return self.prompt.handle_forward_char(event)
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_ctrl_q(self, key_bindings):
@@ -265,14 +265,14 @@ class BannerBarArea(object):
     # ***
 
     def build_builder(self, term_width=0):
-        stretch_width = self.prompter.bottombar.builder.first_line_len
+        stretch_width = self.prompt.bottombar.builder.first_line_len
         self.builder = BannerBarBuilder(
-            colors=self.prompter.colors,
+            colors=self.prompt.colors,
             term_width=term_width,
         )
         self.content = (
-            self.prompter.bannerbar_title,
-            self.prompter.type_request,
+            self.prompt.bannerbar_title,
+            self.prompt.type_request,
             self.help_section_text,
         )
         self.help_section_idx = 2
@@ -287,13 +287,13 @@ class BannerBarArea(object):
     def assemble_hints(self):
         self.help_pages = (
             self.completion_hints
-            + self.prompter.completion_hints
+            + self.prompt.completion_hints
             + ['']  # Cycle through to blank line.
         )
 
     def help_section_text(self):
         help_text = self.help_pages[self.help_page_number].format(
-            part_type=self.prompter.edit_part_type,
+            part_type=self.prompt.edit_part_type,
         )
         return help_text
 
@@ -307,12 +307,12 @@ class BannerBarArea(object):
         restore_column = event.app.current_buffer.cursor_position
         # The cursor position is relative to the PPT buffer which starts
         # after the prefix we told the prompt to draw.
-        restore_column += len(self.prompter.session_prompt_prefix)
+        restore_column += len(self.prompt.session_prompt_prefix)
 
         # The hack gets hackier: Add one for the '@' if BeforeInput set.
-        if self.prompter.lock_act:
-            restore_column += len(self.prompter.activity)
-            restore_column += len(self.prompter.sep)
+        if self.prompt.lock_act:
+            restore_column += len(self.prompt.activity)
+            restore_column += len(self.prompt.sep)
 
         # The help row is this many rows above the prompt: As many rows as
         # the banner, minus the row that the help is on, plus one row for

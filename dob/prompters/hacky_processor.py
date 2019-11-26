@@ -31,9 +31,9 @@ class HackyProcessor(Processor):
     else to hook the showing/hiding of the completion list.
     """
 
-    def __init__(self, prompter):
+    def __init__(self, prompt):
         super(HackyProcessor, self).__init__()
-        self.prompter = prompter
+        self.prompt = prompt
         self.start_completion = False
 
     def __repr__(self):
@@ -53,7 +53,7 @@ class HackyProcessor(Processor):
         # that I cannot otherwise do through the session construction, or
         # the prompt method.
 
-        complete_state = self.prompter.session.app.current_buffer.complete_state
+        complete_state = self.prompt.session.app.current_buffer.complete_state
 
         # *** Optional: Show completions drop down on prompt startup.
 
@@ -96,5 +96,5 @@ class HackyProcessor(Processor):
         # state also depends on whether completions are showing or not.
 
         showing_completions = complete_state is not None
-        self.prompter.summoned(showing_completions=showing_completions)
+        self.prompt.summoned(showing_completions=showing_completions)
 

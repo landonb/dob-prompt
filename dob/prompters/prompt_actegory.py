@@ -620,26 +620,26 @@ class ActegoryHackyProcessor(HackyProcessor):
     """
     """
 
-    def __init__(self, prompter):
-        super(ActegoryHackyProcessor, self).__init__(prompter)
-        self.before_input = BeforeInput(text=self.prompter.sep)
-        self.after_input = AfterInput(text=self.prompter.sep)
+    def __init__(self, prompt):
+        super(ActegoryHackyProcessor, self).__init__(prompt)
+        self.before_input = BeforeInput(text=self.prompt.sep)
+        self.after_input = AfterInput(text=self.prompt.sep)
 
     def __repr__(self):
-        return 'ActegoryHackyProcessor(%r)' % (self.prompter)
+        return 'ActegoryHackyProcessor(%r)' % (self.prompt)
 
     def apply_transformation(self, transformation_input):
         self.mark_summoned(transformation_input)
 
-        if self.prompter.lock_act:
+        if self.prompt.lock_act:
             # Prefix the input with the Activity, e.g., "act@".
-            text = '{}{}'.format(self.prompter.activity, self.prompter.sep)
+            text = '{}{}'.format(self.prompt.activity, self.prompt.sep)
             self.before_input.text = text
             return self.before_input.apply_transformation(transformation_input)
 
-        elif self.prompter.category:
+        elif self.prompt.category:
             # Follow the input with the Category, e.g., "@cat".
-            text = '{}{}'.format(self.prompter.sep, self.prompter.category)
+            text = '{}{}'.format(self.prompt.sep, self.prompt.category)
             self.after_input.text = text
             return self.after_input.apply_transformation(transformation_input)
 
@@ -650,19 +650,19 @@ class ActegoryBottomBarArea(BottomBarArea):
     """
     """
 
-    def __init__(self, prompter):
-        super(ActegoryBottomBarArea, self).__init__(prompter)
+    def __init__(self, prompt):
+        super(ActegoryBottomBarArea, self).__init__(prompt)
 
     @property
     def say_types(self):
-        if not self.prompter.lock_act:
+        if not self.prompt.lock_act:
             return _('Activities')
         else:
             return _('Categories')
 
     def init_hooks_filter(self):
         def brief_scope(binding):
-            return self.prompter.edit_part_type
+            return self.prompt.edit_part_type
 
         # Option to switch between cats and acts.
         self.filter_bindings = [
@@ -676,7 +676,7 @@ class ActegoryBottomBarArea(BottomBarArea):
         ]
 
     def toggle_scope(self, event):
-        self.prompter.toggle_lock_act(event)
+        self.prompt.toggle_lock_act(event)
 
     def extend_bottom(self, _builder, _dummy_section):
         # The Tag prompt adds a line, so add a blank one now,

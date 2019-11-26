@@ -227,8 +227,8 @@ class TagCloudBottomBarArea(BottomBarArea):
     RESTRICT_ACT = 1
     RESTRICT_CAT = 2
 
-    def __init__(self, prompter):
-        super(TagCloudBottomBarArea, self).__init__(prompter)
+    def __init__(self, prompt):
+        super(TagCloudBottomBarArea, self).__init__(prompt)
         self.restrict_type = TagCloudBottomBarArea.TOGGLE_TYPES[0]
 
     @property
@@ -276,7 +276,7 @@ class TagCloudBottomBarArea(BottomBarArea):
         curr = TagCloudBottomBarArea.TOGGLE_TYPES.index(self.restrict_type)
         curr = (curr + 1) % len(TagCloudBottomBarArea.TOGGLE_TYPES)
         self.restrict_type = TagCloudBottomBarArea.TOGGLE_TYPES[curr]
-        self.prompter.restart_completer(event)
+        self.prompt.restart_completer(event)
 
     def extend_bottom(self, _builder, dummy_section):
         parts = []
@@ -285,7 +285,7 @@ class TagCloudBottomBarArea(BottomBarArea):
         return parts
 
     def extend_bottom_tagged(self, parts, dummy_section):
-        if not self.prompter.ordered_tags:
+        if not self.prompt.ordered_tags:
             return
         dummy_section.add_zinger(_('Selected: '))
         self.extend_bottom_tag_names(dummy_section)
@@ -293,12 +293,12 @@ class TagCloudBottomBarArea(BottomBarArea):
         parts += dummy_section.parts
 
     def extend_bottom_tag_names(self, dummy_section):
-        for tag_name in self.prompter.ordered_tags:
+        for tag_name in self.prompt.ordered_tags:
             dummy_section.add_normal(_('#'))
             dummy_section.add_zinger(tag_name)
             dummy_section.add_normal(_(' '))
 
     def extend_bottom_truncate_names(self, dummy_section):
-        term_width = self.prompter.get_size()[1]
+        term_width = self.prompt.get_size()[1]
         dummy_section.truncate(term_width, _(' <See all with [F8]>'))
 

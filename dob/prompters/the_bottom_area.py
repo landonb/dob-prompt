@@ -37,8 +37,8 @@ class BottomBarArea(object):
     """
     """
 
-    def __init__(self, prompter):
-        self.prompter = prompter
+    def __init__(self, prompt):
+        self.prompt = prompt
         self.active_sort = None
 
     def stand_up(self, key_bindings):
@@ -122,7 +122,7 @@ class BottomBarArea(object):
             if not highlight:
                 return brief
             if sort_order is None:
-                sort_order = self.prompter.sort_order
+                sort_order = self.prompt.sort_order
             marker = '↑' if sort_order == 'asc' else '↓'
             briefed = '{} {}'.format(brief, marker)
             return briefed
@@ -141,7 +141,7 @@ class BottomBarArea(object):
         return len('↑') + len(' ')
 
     def meta_sort_highlight(self, binding):
-        if not self.prompter.showing_completions or binding != self.active_sort:
+        if not self.prompt.showing_completions or binding != self.active_sort:
             return False
         return True
 
@@ -235,11 +235,11 @@ class BottomBarArea(object):
     @property
     def meta_settings_ignore_case(self):
         def handle_ignore_case(event):
-            self.prompter.completer.toggle_ignore_case()
-            self.prompter.bottom_toolbar_reset()
+            self.prompt.completer.toggle_ignore_case()
+            self.prompt.bottom_toolbar_reset()
 
         def brief_ignore_case(binding):
-            if self.prompter.completer.ignore_case:
+            if self.prompt.completer.ignore_case:
                 brief = _('case')
             else:
                 brief = _('Case')
@@ -265,11 +265,11 @@ class BottomBarArea(object):
     @property
     def meta_settings_match_middle(self):
         def handle_match_middle(event):
-            self.prompter.completer.toggle_match_middle()
-            self.prompter.bottom_toolbar_reset()
+            self.prompt.completer.toggle_match_middle()
+            self.prompt.bottom_toolbar_reset()
 
         def brief_match_middle(binding):
-            if self.prompter.completer.match_middle:
+            if self.prompt.completer.match_middle:
                 brief = _('middle')
             else:
                 brief = _('start')
@@ -294,7 +294,7 @@ class BottomBarArea(object):
             def handler(event):
                 # FIDDLING: You can insert text into the buffer, e.g.,
                 #  event.app.current_buffer.insert_text('{}!'.format(keycode))
-                self.prompter.restart_completer(
+                self.prompt.restart_completer(
                     event, self.binding_meta[keycode], toggle_ok=True,
                 )
 
@@ -329,8 +329,8 @@ class BottomBarArea(object):
         # is a lot easier.)
         style = Style.from_dict({
             'bottom-toolbar': '#{} bg:#{}'.format(
-                self.prompter.colors.color_2,
-                self.prompter.colors.color_1,
+                self.prompt.colors.color_2,
+                self.prompt.colors.color_1,
             ),
             # We could specify the text color here, e.g.,
             #  'bottom-toolbar.text': '#FCA5A5 bg:#AA3939',
@@ -346,7 +346,7 @@ class BottomBarArea(object):
     def build_builder(self):
         def build_bottom_toolbar():
             builder = BindingsBarBuilder(
-                colors=self.prompter.colors,
+                colors=self.prompt.colors,
             )
             add_bindings_sort(builder)
             add_bindings_filter(builder)
@@ -378,7 +378,7 @@ class BottomBarArea(object):
         # ***
 
         def sort_bindings_plinth():
-            if not self.prompter.showing_completions:
+            if not self.prompt.showing_completions:
                 description = '▲ Choose a sort order to see hints ▲'
             else:
                 description = self.active_sort.wordy.format(types=self.say_types)
