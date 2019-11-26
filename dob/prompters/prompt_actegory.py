@@ -453,8 +453,9 @@ class PromptForActegory(SophisticatedPrompt):
     def prompt_for_actegory(self):
         self.debug(_('{}@{}').format(self.activity, self.category))
 
-        default = ''
-        if self.lock_act:
+        if not self.lock_act:
+            default = self.activity
+        else:
             default = self.category
 
         self.validator = ActegoryValidator(self)
