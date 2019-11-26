@@ -352,6 +352,17 @@ class PromptForActegory(SophisticatedPrompt):
     def type_request(self):
         return _('Enter an Activity{}Category').format(self.sep)
 
+    @property
+    def completion_hints(self):
+        tags_hints = [
+            _('Type the Activity name or choose an Act{}Gory from the dropdown.').format(self.sep),
+            _('Press ENTER to set the Activity (or type ‘{}’, or press Ctrl-s).').format(self.sep),
+            _('Next, type the Category name, and then press ENTER or Ctrl-s.'),
+            _('Use arrow keys or press F9 to jump between Activity and Category.'),
+        ]
+        tags_hints += super(PromptForActegory, self).completion_hints
+        return tags_hints
+
     def init_completer(self):
         return ActegoryCompleterSuggester(self, self.summoned)
 
