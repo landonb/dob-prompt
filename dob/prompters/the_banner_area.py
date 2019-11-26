@@ -73,7 +73,14 @@ class BannerBarArea(object):
         # Make LEFT and RIGHT transition Activity ↔ Category input state.
         self.wire_hook_left(key_bindings)
         self.wire_hook_right(key_bindings)
-        # Use Ctrl-q for ...
+        # In lieu of hooking Ctrl-c ('c-c') to prevent prompt from exiting,
+        # the prompt runner catches KeyboardInterrupt. Either way is
+        # appropriate, but the side effect of catching KeyboardInterrupt
+        # is that the cursor jumps to the right side of the input, because
+        # the prompt is actually restarted. (In the least, this offers a
+        # novel way of re-running session.prompt() -- just send Ctrl-c.)
+        #  N/A: self.wire_hook_ctrl_c(key_bindings)
+        # Use Ctrl-q for exiting. Make it take two if edits, Tap tap exit.
         self.wire_hook_ctrl_q(key_bindings)
 
     def wire_hook_help(self, key_bindings):
@@ -109,8 +116,22 @@ class BannerBarArea(object):
                     if not handled:
                         basic_binding = get_by_name(named_command)
                         basic_binding(event)
+                    return handled
                 return update_wrapper(_bubble_basic_binding, func)
             return _bubble_basic_decorator
+
+        @classmethod
+        def reset_timeouts(cls, prompt):
+            # cls is Decorators
+            def _reset_timeouts_decorator(func, *args, **kwargs):
+                def _reset_timeouts_binding(event, *args, **kwargs):
+                    prompt.debug('_reset_timeouts_binding')
+                    prompt.reset_timeouts()
+                    handled = func(event, *args, **kwargs)
+                    prompt.debug('_reset_timeouts_binding/handled: {}'.format(handled))
+                    return handled
+                return update_wrapper(_reset_timeouts_binding, func)
+            return _reset_timeouts_decorator
 
     def wire_hook_ctrl_z(self, key_bindings):
         keycode = ('c-z',)
@@ -118,6 +139,7 @@ class BannerBarArea(object):
         # (lb): A purist might suggest that a Ctrl-z literally be echoed,
         # but I think frantic persons will appreciate an obvious recovery
         # mechanism.
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             self.prompt.handle_content_reset(event)
         key_bindings.add(*keycode)(handler)
@@ -125,6 +147,7 @@ class BannerBarArea(object):
     def wire_hook_escape(self, key_bindings):
         keycode = ('escape',)
 
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             self.prompt.handle_escape_dismiss(event)
         key_bindings.add(*keycode)(handler)
@@ -135,6 +158,7 @@ class BannerBarArea(object):
         # And a lone Backspace is '\x7f', but PPT says key 'c-h', like C-BS and C-h.
         keycode = ('c-h',)  # Aka ('backspace',)
 
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             # Backspace (aka rubout) is ASCII 127/DEL. Ctrl-Backspace and C-h are 8.
             # (lb): I think it's a terminal issue, and not something we can change.
@@ -163,6 +187,7 @@ class BannerBarArea(object):
         keycode = ('c-w',)
 
         @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_word_rubout(event)
         key_bindings.add(*keycode)(handler)
@@ -174,6 +199,7 @@ class BannerBarArea(object):
         # - So override to just clear the input line.
         # SKIP:
         #   @BannerBarArea.Decorators.bubble_basic_binding('clear-screen')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             self.prompt.handle_clear_screen(event)
         key_bindings.add(*keycode)(handler)
@@ -190,6 +216,7 @@ class BannerBarArea(object):
         # seems not as useful as provider left-handed (per QWERTY)
         # method to save (to complement right-handed ENTER option).
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
@@ -200,6 +227,7 @@ class BannerBarArea(object):
         # (lb): Redundant? Both Ctrl-space and Ctrl-s are left-hand
         # accessible. Do we really need 2 left-hand accessible ENTERs?
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
@@ -213,6 +241,7 @@ class BannerBarArea(object):
         # hints. So we need to handle this situation ourselves, to get
         # around the validator.
         @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
         key_bindings.add(*keycode)(handler)
@@ -235,6 +264,7 @@ class BannerBarArea(object):
         # entry is "Appointments". Hitting TAB, PPT defaults to completing
         # with "Appointments" and not "Pool Time", like one would expect!
         @BannerBarArea.Decorators.bubble_basic_binding('menu-complete')
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_menu_complete(event)
         key_bindings.add(*keycode)(handler)
@@ -243,6 +273,12 @@ class BannerBarArea(object):
         keycode = ('left',)
 
         @BannerBarArea.Decorators.bubble_basic_binding('backward-char')
+        # Note that when the completion dropdown is showing, this handler
+        # does not fire at all, so we use a Validator as a hacky way to
+        # be sure to call reset_timeouts (because as the user left/right/
+        # up/down arrows around the completion dropdown, each selected
+        # entry is sent to the validator, which then calls reset_timeouts).
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_backward_char(event)
         key_bindings.add(*keycode)(handler)
@@ -251,6 +287,10 @@ class BannerBarArea(object):
         keycode = ('right',)
 
         @BannerBarArea.Decorators.bubble_basic_binding('forward-char')
+        # See commend in wire_hook_left: 'right' not triggered when completions
+        # dropdown showing, so separate wiring in place to call reset_timeouts
+        # when the 'right' event is masked from us.
+        @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_forward_char(event)
         key_bindings.add(*keycode)(handler)
@@ -258,8 +298,11 @@ class BannerBarArea(object):
     def wire_hook_ctrl_q(self, key_bindings):
         keycode = ('c-q',)
 
+        # NO: @BannerBarArea.Decorators.reset_timeouts(self.prompt)
+        # (Do not wrap with reset_timeouts because handle_exit_request
+        # might set one of those timeouts, which we wouldn't want reset.)
         def handler(event):
-            self.prompter.controller.client_logger.debug('FIXME: c-q')
+            return self.prompt.handle_exit_request(event)
         key_bindings.add(*keycode)(handler)
 
     # ***

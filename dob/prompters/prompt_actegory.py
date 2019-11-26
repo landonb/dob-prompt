@@ -18,11 +18,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import re
+import time
 
 from gettext import gettext as _
 
-from prompt_toolkit import print_formatted_text
-from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput, Transformation
 from prompt_toolkit.validation import Validator, ValidationError
 
@@ -54,9 +53,6 @@ class PromptForActegory(SophisticatedPrompt):
         self.activity = ''
         self.category = ''
         self.lock_act = False
-
-        # FIXME/2019-11-23 23:18: (lb): Will remove shortly, I affirm!
-        self.debug = self.controller.client_logger.debug
 
         self.reactegory = RegExpActegory(self.sep)
 
@@ -200,24 +196,6 @@ class PromptForActegory(SophisticatedPrompt):
         self.category = event.current_buffer.text
         return False
 
-    def handle_menu_complete(self, event):
-        # PPT's tab complete using the first completion, not the suggestion.
-        # Here we fix that.
-
-        # FIXME/2019-11-24: (lb): Do we need this for tags, too?
-        # - We could just move to base class if so.
-
-        suggestion = event.current_buffer.suggestion
-        if suggestion and suggestion.text:
-            # Pretty much exactly what load_auto_suggest_bindings does.
-            cb = event.current_buffer
-            cb.insert_text(suggestion.text)
-            return True
-
-        # Else, default to normal TAB behavior, which cycles through
-        # list of completions ('menu-complete').
-        return False
-
     def handle_backward_char(self, event):
         """Awesome Prompt LEFT handler."""
         if event.current_buffer.cursor_position == 0:
@@ -240,7 +218,7 @@ class PromptForActegory(SophisticatedPrompt):
         reset_text = self.lock_act and self.category or self.activity
         event.current_buffer.text = reset_text
         event.current_buffer.cursor_position = len(event.current_buffer.text)
-        self.update_input_hint(event, self.lock_act, True)
+        self.update_input_hint(event)
         return True
 
     def handle_escape_dismiss(self, event):
@@ -256,7 +234,7 @@ class PromptForActegory(SophisticatedPrompt):
     def reset_lock_act(self, event, new_text=None):
         was_lock_act = self.lock_act
         self.lock_act = False
-        self.update_input_hint(event, was_lock_act)
+        self.update_input_hint(event)
         if new_text is None:
             new_text = self.activity
         # (lb): I tested insert_text and it seems to work the same,
@@ -271,54 +249,33 @@ class PromptForActegory(SophisticatedPrompt):
         if was_lock_act != self.lock_act:
             self.restart_completer(event)
 
-    def update_input_hint(self, event, was_lock_at, hack=False):
-        self.update_input_hint_renderer(event.app.renderer, was_lock_at, hack)
+    def update_input_hint(self, event):
+        self.update_input_hint_renderer(event.app.renderer)
 
-    # (lb): HACK!
-    def update_input_hint_renderer(self, renderer, was_lock_at, hack=False):
-        # - Note either event.app.current_buffer or event.current_buffer seem to work.
-        # - The rendered cursor position should be same as if we calculated:
-        #     restore_column = event.app.current_buffer.cursor_position
-        #     restore_column += len(self.session_prompt_prefix)
-        #     if was_lock_at:
-        #         restore_column += len(self.activity)
-        #         restore_column += len(self.sep)
-        #     affirm(restore_column == event.app.renderer._cursor_pos.x)
-        #   but less fragile/obtuse.
-        cursor_x = renderer._cursor_pos.x
+    @property
+    def prompt_header_hint(self):
+        what_hint = super(PromptForActegory, self).prompt_header_hint
+        if what_hint:
+            return what_hint
 
-        relative_help_row = 1
-        renderer.output.cursor_up(relative_help_row)
-        renderer.output.cursor_backward(cursor_x)
+        what = self.edit_part_type.capitalize()
+        # (lb): In addition to keys hinted, you can also Ctrl-SPACE. For now.
+        if not self.lock_act:
+            what_hint = _('Enter the {} then hit ENTER or `@`').format(what)
+        else:
+            what_hint = _('Enter the {} then hit ENTER or Ctrl-s').format(what)
+        return what_hint
 
-        relative_prompt_row = relative_help_row
-
-        columns = renderer.output.get_size().columns
-        max_col = columns - 2
-        prompt_for_what = self.prompt_for_what(max_col)
-
-        print_formatted_text(FormattedText(prompt_for_what))
-
-        recreate_it = '{}{}{}{}'.format(
+    def prompt_recreate_filled(self, max_col=0):
+        fake_prompt = '{}{}{}{}'.format(
             self.session_prompt_prefix,
             self.activity,
             self.sep,
             self.category,
         )
-        print_formatted_text(
-            FormattedText([
-                ('', recreate_it),
-            ]),
-            end='',
-        )
-
-        # (lb): This is insane. Put cursor where it belongs, at end of
-        # recreated text.
-        # - I think that renderer._cursor_pos remains unchanged,
-        # but in reality the cursor moved (because print_formatted_text),
-        # so here we're moving it back to where PPT expects it to be. Or
-        # something.
-        renderer.output.cursor_backward(len(recreate_it) - cursor_x)
+        self.debug('fake_prompt: {}'.format(fake_prompt))
+        line_parts = [('', fake_prompt)]
+        return line_parts
 
     # ***
 
@@ -380,29 +337,6 @@ class PromptForActegory(SophisticatedPrompt):
             self.category = event.current_buffer.text
             self.reset_lock_act(event)
 
-    def prompt_for_what(self, max_col=0):
-        prefix = '  '
-
-        what = self.edit_part_type.capitalize()
-        # (lb): In addition to keys hinted, you can also Ctrl-SPACE. For now.
-        if not self.lock_act:
-            hint = _('Enter the {} then hit ENTER or `@`').format(what)
-        else:
-            hint = _('Enter the {} then hit ENTER or Ctrl-s').format(what)
-
-        colfill = max_col - len(hint)
-        if max_col > 0 and colfill < 0:
-            # (lb): 2019-11-23: Assuming this'll work... coverage prove it?
-            # BEWARE/2019-11-23 23:03: This is not ANSI-aware!
-            hint = hint[:max_col]
-
-        line_parts = []
-        line_parts.append(('', prefix))
-        line_parts.append(('italic underline', hint))
-        if max_col > 0 and colfill > 0:
-            line_parts.append(('', ' ' * colfill))
-        return line_parts
-
     # ***
 
     def update_state(self, activity, category, lock_act=False, startup=False):
@@ -420,7 +354,7 @@ class PromptForActegory(SophisticatedPrompt):
             and (self.session is not None)
             and (was_lock_act != self.lock_act)
         ):
-            self.update_input_hint_renderer(self.session.app.renderer, was_lock_act)
+            self.update_input_hint_renderer()
             self.restart_completer(event=None)
 
     def lock_activity(self, activity, lock_act=False):
@@ -445,10 +379,37 @@ class PromptForActegory(SophisticatedPrompt):
         return self.activity, self.category
 
     def keep_prompting_until_satisfied(self):
-        try:
-            self.prompt_for_actegory()
-        finally:
-            self.clean_up_print_text_header()
+        blocking_ctrl_c = True
+        while blocking_ctrl_c:
+            try:
+                self.prompt_for_actegory()
+                blocking_ctrl_c = False
+            # (lb): We shouldn't expect to see EOFError here (an I/O error),
+            # but the user pressing Ctrl-c raises KeyboardInterrupt. (Which
+            # we could prevent by wiring a PPT KeyBinding on 'c-c', but don't.)
+            # The Awesome Prompt is run from the interactive editor (Carousel),
+            # which maps Ctrl-c to Copy. So don't die on Ctrl-c here, so that
+            # users have a more consistent experience (albeit in lieu of Copy,
+            # in Awesome Prompt, a Ctrl-c just does nothing... well, it does
+            # something, but it's innocuous, it shows a message telling the
+            # user to try Ctrl-q if they really want to exit-quit).
+            except KeyboardInterrupt:
+                # Ye olde Ctrl-c, and not an Exception.
+                # Note that we'll just re-run the prompt. The only thing
+                # the user will see is that the cursor goes to the end of
+                # the input (either the Activity or the Category). We could
+                # fix this by recording the cursor position, and then restoring
+                # it. But it's also nice to have a little reaction to a Ctrl-c,
+                # especially when the user might be expecting it to cancel the
+                # whole show. Instead, it just nudges the cursor to the end, like
+                # a little burp.
+                self.ctrl_c_pressed = time.time()
+                # Because prompt died, cannot (perform a kludgey) print right now.
+                # So wait for prompt to be regenerated, then move cursor and print.
+                self.update_pending = True
+            finally:
+                if not blocking_ctrl_c:
+                    self.clean_up_print_text_header()
 
     def prompt_for_actegory(self):
         self.debug(_('{}@{}').format(self.activity, self.category))
@@ -476,9 +437,12 @@ class PromptForActegory(SophisticatedPrompt):
         # is either the category, or it's the act@gory (possibly escaped, too,
         # e.g., _text could be 'act\\@still the activity name@category name').
 
-        _text = self.session_prompt(default=default, validator=self.validator)
+        _result = self.session_prompt(
+            default=default,
+            validator=self.validator,
+        )
 
-        self.debug(_('prompt done! / text: {}').format(_text))
+        self.debug('prompt done! / _result: {}'.format(_result))
 
     # ***
 
@@ -553,17 +517,46 @@ class PromptForActegory(SophisticatedPrompt):
 
         text = self.session.app.current_buffer.text
         self.debug('dissemble: text: {}'.format(text))
-        set_act_cat = self.try_disassemble_parts(text)
+        _set_act_cat = self.try_disassemble_parts(text)
 
     def try_disassemble_parts(self, text):
-        activity, category = self.reactegory.split_parts(text)
+        act_or_cat, category = self.reactegory.split_parts(text)
 
         if category is not None:
             self.category = category
-            self.lock_activity(activity)
+            self.lock_activity(act_or_cat)
             return True
+
+        self.debug('!dissemble: lock? {} / act_or_cat: {}'.format(
+            self.lock_act, act_or_cat,
+        ))
+
+        # Be sure to always consume the input, even if the user has not
+        # finished (hit ENTER), so that a command like Ctrl-q can reliably
+        # check if the inputs were changed since prompt inception.
+        if not self.lock_act:
+            self.activity = act_or_cat
+        else:
+            self.category = act_or_cat
+
         return False
 
+    @property
+    def changed_since_init(self):
+        return (
+            (self.activity != self.activity0)
+            or (self.category != self.category0)
+        )
+
+    def approve_exit_request(self):
+        """Awesome Prompt Ctrl-q handler."""
+        exitable = super(PromptForActegory, self).approve_exit_request()
+        if exitable:
+            self.activity = self.activity0
+            self.category = self.category0
+        return exitable
+
+    # ***
 
 class RegExpActegory(object):
 
@@ -596,7 +589,7 @@ class RegExpActegory(object):
         try:
             escaped_act, escaped_cat = self.re_unescaped_sep.split(text, 1)
         except ValueError:
-            return text, None
+            return self.unescape(text), None
         activity = self.unescape(escaped_act)
         category = self.unescape(escaped_cat)
         return activity, category
@@ -641,7 +634,11 @@ class ActegoryHackyProcessor(HackyProcessor):
         return 'ActegoryHackyProcessor(%r)' % (self.prompt)
 
     def apply_transformation(self, transformation_input):
+        # Note that this method completely shadows the parent's
+        # so there's a little duplication herein (the prefix and
+        # postfix around the if-elif branch are not DRY).
         self.mark_summoned(transformation_input)
+        self.prompt.heartbeat()
 
         if self.prompt.lock_act:
             # Prefix the input with the Activity, e.g., "act@".
@@ -723,6 +720,9 @@ class ActegoryValidator(Validator):
             return
         self.last_text = text
 
+        # A little coupled. User is doing something, so hide Ctrl-q hint.
+        self.prompt.reset_timeouts()
+
         # tl;dr: When the state is Activity input, the text is either an
         #   Activity name, or it's an encoded "act@gory". So look for an
         #   un-escaped separator ('@') in text. If found, split the text
@@ -759,7 +759,7 @@ class ActegoryValidator(Validator):
             return
 
         self.prompt.debug('dissemble: text: {}'.format(text))
-        self.prompt.try_disassemble_parts(text)
+        _set_act_cat = self.prompt.try_disassemble_parts(text)
 
         # Use ValidationError to show message in bottom-left of prompt
         # (just above our the_bottom_area footer).

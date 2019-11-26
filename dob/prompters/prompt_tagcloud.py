@@ -17,7 +17,11 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import time
+
 from gettext import gettext as _
+
+from prompt_toolkit.validation import Validator
 
 from .colors_terrific import TerrificColors2
 from .hacky_processor import HackyProcessor
@@ -84,8 +88,10 @@ class PromptForMoreTags(SophisticatedPrompt):
     @property
     def completion_hints(self):
         tags_hints = [
-            'Type or choose tags and press ENTER to add/remove.'
-            ' ENTER empty tag to finish.',
+            _('Type tag or choose from dropdown, and press ENTER to add.'),
+            _('To finish, press ENTER on a blank line (or press Ctrl-S).'),
+            _('To remove tags, press F8 to view tags that can be removed...'),
+            _('... and use arrow keys to choose a tag and ENTER to remove.'),
         ]
         tags_hints += super(PromptForMoreTags, self).completion_hints
         return tags_hints
@@ -137,14 +143,20 @@ class PromptForMoreTags(SophisticatedPrompt):
     def prompt_for_tags(self):
         keep_asking = True
         while keep_asking:
-            keep_asking = self.prompt_for_tag()
-            # If we prompt again, start with suggestions showing.
-            self.processor.start_completion = True
-            self.reset_completer()
+            try:
+                keep_asking = self.prompt_for_tag()
+                # If we prompt again, start with suggestions showing.
+                self.processor.start_completion = True
+                self.reset_completer()
+            except KeyboardInterrupt:
+                self.ctrl_c_pressed = time.time()
+                self.update_pending = True
 
     def prompt_for_tag(self):
+        self.validator = TagCloudValidator(self)
+
         keep_asking = True
-        text = self.session_prompt()
+        text = self.session_prompt(validator=self.validator)
         if text:
             self.process_user_response(text)
         else:
@@ -216,6 +228,39 @@ class PromptForMoreTags(SophisticatedPrompt):
                 continue
             culled.append(result)
         return culled
+
+    # ***
+
+    @property
+    def changed_since_init(self):
+        return self.session.app.current_buffer.text
+
+    def approve_exit_request(self):
+        """Awesome Prompt Ctrl-q handler."""
+        exitable = super(PromptForMoreTags, self).approve_exit_request()
+        if exitable:
+            pass  # Get ready for exit?
+        return exitable
+
+    @property
+    def prompt_header_hint(self):
+        what_hint = super(PromptForMoreTags, self).prompt_header_hint
+        if what_hint:
+            return what_hint
+
+        what_hint = _(
+            'Type tag and ENTER to add / Use F8 to remove tags / Ctrl-s to finish'
+        ).format()
+        return what_hint
+
+    def prompt_recreate_filled(self, max_col=0):
+        fake_prompt = '{}{}'.format(
+            self.session_prompt_prefix,
+            self.session.layout.current_buffer.text,
+        )
+        self.debug('fake_prompt: {}'.format(fake_prompt))
+        line_parts = [('', fake_prompt)]
+        return line_parts
 
 
 class TagCloudBottomBarArea(BottomBarArea):
@@ -301,4 +346,16 @@ class TagCloudBottomBarArea(BottomBarArea):
     def extend_bottom_truncate_names(self, dummy_section):
         term_width = self.prompt.get_size()[1]
         dummy_section.truncate(term_width, _(' <See all with [F8]>'))
+
+
+class TagCloudValidator(Validator):
+    """"""
+
+    def __init__(self, prompt, *args, **kwargs):
+        super(TagCloudValidator, self).__init__(*args, **kwargs)
+        self.prompt = prompt
+
+    def validate(self, document):
+        # A little coupled. User is doing something, so hide Ctrl-q hint.
+        self.prompt.reset_timeouts()
 

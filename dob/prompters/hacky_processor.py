@@ -45,6 +45,7 @@ class HackyProcessor(Processor):
 
     def apply_transformation(self, transformation_input):
         self.mark_summoned(transformation_input)
+        self.prompt.heartbeat()
         return Transformation(transformation_input.fragments)
 
     def mark_summoned(self, transformation_input):

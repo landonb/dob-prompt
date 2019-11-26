@@ -17,6 +17,8 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import time
+
 from collections import namedtuple
 
 from gettext import gettext as _
@@ -56,6 +58,10 @@ class SophisticatedPrompt(PrompterCommon):
     """
     """
 
+    DIRTY_QUITER_THRESHOLD = 1.667
+
+    SESSION_PROMPT_REFRESH_INTERVAL = 0.5
+
     def __init__(self, controller):
         self.controller = controller
         self.history = self.init_history()
@@ -70,6 +76,12 @@ class SophisticatedPrompt(PrompterCommon):
         # A little hack for cycle_hack: a derived class attribute.
         # Ideally, we should not have this here, but easier, why not.
         self.lock_act = False
+
+        self.ctrl_c_pressed = None
+        self.ctrl_q_pressed = None
+        self.update_pending = False
+
+        self._debug = self.controller.client_logger.debug
 
     # ***
 
@@ -342,35 +354,73 @@ class SophisticatedPrompt(PrompterCommon):
     def session_prompt_prefix(self):
         return '> '
 
-    # Called in a loop by the actegory- or tagcloud-asker, either until
-    # valid actegory entered, or until user is finished entering tags.
-    def session_prompt(self, default='', validator=None):
-        validate_while_typing = validator is not None
+    # This is the blocking (not asyncio) PPT prompt call that runs the
+    # act@gory and tags inputs. All the dob user interface interaction
+    # is handled through callback'ish objects, like the validator, the
+    # completer, and the input processor.
+    def session_prompt(self, **kwargs):
+        try:
+            return self._session_prompt(**kwargs)
+        except (EOFError, KeyboardInterrupt):
+            raise
 
+    def _session_prompt(self, default='', validator=None):
+        validate_while_typing = validator is not None
         text = self.session.prompt(
             self.session_prompt_prefix,
+
+            # The initial input control text.
             default=default,
 
+            # (lb): The super special bottom toolbar. Its state depends on the
+            # state of the prompt. If I were to rebuild the Awesome Prompt, I'd
+            # use PPT components (like the interactive editor uses) and not the
+            # shortcut session.prompt, so that we could refresh individual parts
+            # of the bottom toolbar; but specified as the bottom_toolbar of a
+            # prompt, it instead is drawn as a sequence of lines each time. Not
+            # a big deal, just not as elegant as it could be. (Also, we have to
+            # explicitly nudge the bottom_toolbar to update it; the PPT prompt
+            # doesn't otherwise do anything with it other than draw it once.)
             bottom_toolbar=self.bottom_toolbar,
-            # FIXME: (lb): Add animation? Then redraw periodically; else, no cares.
-            #  # Call self.bottom_toolbar periodically.
-            #  refresh_interval=0.5,
 
+            # (lb): When I added burnout messages that hide on their own
+            # if the user doesn't trigger them to hide earlier (like the
+            # Press-Ctrl-q-Twice-to-Quit-and-Discard-Changes message), I
+            # briefly tried to use asyncio to wire timers. E.g.,
+            #     refresh_interval=None,
+            #     async_=True,
+            # with an `await self.session_prompt()` and the whole shebang
+            # (using an example at p-p-t/examples/prompts/asyncio-prompt.py),
+            # but I ran into issues pretty much immediately. And I gave up
+            # on asyncio immediately, too -- I know that I wired the interactive
+            # editor (carousel.py) with asyncio when I built it, and even then
+            # it was tricky. So I'd assume trying to jam asyncio into Awesome
+            # Prompt well into its mature years is probably not a good use of
+            # anyone's time. - So here we enable refresh_interval, which will
+            # cause the apply_transformation method of Processor objects to
+            # get tickled periodically (and which we can use to implement
+            # crude "timers").
+            refresh_interval=self.SESSION_PROMPT_REFRESH_INTERVAL,
+
+            # Completer wiring. See, e.g., ActegoryCompleterSuggester.
             completer=self.completer,
             complete_in_thread=True,
             complete_style=CompleteStyle.MULTI_COLUMN,
             complete_while_typing=self.complete_while_typing,
 
+            # Processor wiring. See, e.g., ActegoryHackyProcessor.
             input_processors=[self.processor, ],
 
+            # KeyBinding wiring.
             key_bindings=self.key_bindings,
 
+            # Style: Twiddle to extend bg colors the full terminal width.
             style=self.bottombar.prompt_style,
 
+            # Validator wiring, e.g., ActegoryValidator.
             validate_while_typing=validate_while_typing,
             validator=validator,
         )
-
         return text
 
     # ***
@@ -390,6 +440,45 @@ class SophisticatedPrompt(PrompterCommon):
 
     # ***
 
+    @property
+    def changed_since_init(self):
+        raise NotImplementedError
+
+    def handle_exit_request(self, event):
+        """Awesome Prompt Ctrl-q handler."""
+        if self.approve_exit_request():
+            self.ctrl_q_pressed = None
+            event.app.exit()
+
+    def approve_exit_request(self):
+        latest_press = time.time()
+        exitable = self.verify_second_exit_request(latest_press)
+        self.ctrl_q_pressed = latest_press
+        exitable = self.allow_exit_if_unchanged_else_hint(exitable)
+        return exitable
+
+    def allow_exit_if_unchanged_else_hint(self, exitable):
+        if exitable:
+            return exitable
+
+        if not self.changed_since_init:
+            # Just one Ctrl-q received, but no input changes, so okay to exit.
+            exitable = True
+        else:
+            # Just one Ctrl-q, but input changed, so tell user to be forcefuller.
+            # Super will have set self.ctrl_q_pressed to now time.
+            self.update_input_hint_renderer()
+        return exitable
+
+    def verify_second_exit_request(self, latest_press):
+        if self.ctrl_q_pressed is None:
+            return False
+        if (latest_press - self.ctrl_q_pressed) < self.DIRTY_QUITER_THRESHOLD:
+            return True
+        return False
+
+    # ***
+
     def restart_completer(self, event=None, binding=None, toggle_ok=False):
         # (lb): Docs indicate set_completions is part of buffer, but not so:
         #   NOPE: event.app.current_buffer.set_completions(completions=...)
@@ -406,6 +495,15 @@ class SophisticatedPrompt(PrompterCommon):
         self.reset_completer(binding=binding, toggle_ok=toggle_ok)
         if (event is not None) and self.showing_completions:
             event.app.current_buffer.start_completion()
+
+    # ***
+
+    def debug(self, *args, **kwargs):
+        # MAYBE/2019-11-26: (lb): Remove debug() code. Useful for now.
+        # (It just clutters the code a bit, and your log, no biggie.)
+        if not self._debug:
+            return
+        self._debug(*args, **kwargs)
 
     # ***
 
@@ -431,8 +529,129 @@ class SophisticatedPrompt(PrompterCommon):
 
     # ***
 
-    def prompt_for_what(self, max_col=0):
-        return ''
+    @property
+    def prompt_header_hint(self):
+        if self.ctrl_c_pressed:
+            # Ctrl-c is blocked in the interactive editor Carousel so here as well.
+            hint = _('Try Ctrl-q if you want to quit!').format()
+        elif self.ctrl_q_pressed:
+            hint = _('Press Ctrl-q a second time to really quit!').format()
+        else:
+            hint = ''
+        return hint
+
+    def header_hint_parts(self, max_col=0):
+        prefix = '  '
+        what_hint = self.prompt_header_hint
+        # BEWARE/2019-11-23: This is not ANSI-aware.
+        colfill = max_col - len(what_hint)
+
+        if max_col > 0 and colfill < 0:
+            # (lb): 2019-11-23: Assuming this'll work... coverage prove it?
+            what_hint = what_hint[:max_col]
+
+        line_parts = []
+        line_parts.append(('', prefix))
+        line_parts.append(('italic underline', what_hint))
+        if max_col > 0 and colfill > 0:
+            line_parts.append(('', ' ' * colfill))
+
+        self.debug('line_parts: {}'.format(line_parts))
+
+        return line_parts
+
+    # (lb): HACK!
+    def update_input_hint_renderer(self, renderer=None):
+        if renderer is None:
+            renderer = self.session.app.renderer
+        # - Note either event.app.current_buffer or event.current_buffer seem to work.
+        # - The rendered cursor position should be same as if we calculated:
+        #     restore_column = event.app.current_buffer.cursor_position
+        #     restore_column += len(self.session_prompt_prefix)
+        #     if was_lock_at:
+        #         restore_column += len(self.activity)
+        #         restore_column += len(self.sep)
+        #     affirm(restore_column == event.app.renderer._cursor_pos.x)
+        #   but less fragile/obtuse.
+        cursor_x = renderer._cursor_pos.x
+
+        relative_help_row = 1
+        renderer.output.cursor_up(relative_help_row)
+        renderer.output.cursor_backward(cursor_x)
+
+        columns = renderer.output.get_size().columns
+        max_col = columns - 2
+
+        hint_parts = self.header_hint_parts(max_col)
+        print_formatted_text(FormattedText(hint_parts))
+
+        prompt_parts = self.prompt_recreate_filled(max_col)
+        print_formatted_text(FormattedText(prompt_parts), end='')
+
+        # (lb): This is insane. Put cursor where it belongs, at end of
+        # recreated text.
+        # - I think that renderer._cursor_pos remains unchanged,
+        # but in reality the cursor moved (because print_formatted_text),
+        # so here we're moving it back to where PPT expects it to be. Or
+        # something.
+        fake_prompt = prompt_parts[0][1]
+        # BEWARE: The len() is not ANSI-aware. So keep a clean prompt!
+        renderer.output.cursor_backward(len(fake_prompt) - cursor_x)
+
+        self.debug('printed hint')
+
+    # ***
+
+    def heartbeat(self):
+        if self.update_pending:
+            self.update_input_hint_renderer()
+            self.update_pending = False
+        # We passed a refresh_interval to session.prompt(), which invalidates and
+        # redraws the screen periodically, which triggers apply_transformation(),
+        # which calls this heartbeat method. It's a roundabout, naive, non-event
+        # driven, say, poll-driven, timer implementation.
+        now = time.time()
+        self.heartbeart_ctrl_c(now)
+        self.heartbeart_ctrl_q(now)
+
+    def heartbeart_ctrl_c(self, now):
+        if self.ctrl_c_pressed is None:
+            return
+        if (now - self.ctrl_c_pressed) <= self.DIRTY_QUITER_THRESHOLD:
+            return
+        self.debug('reset Ctrl-c timeout')
+        self.ctrl_c_forget()
+
+    def ctrl_c_forget(self):
+        if self.ctrl_c_pressed is None:
+            return
+        self.ctrl_c_pressed = None
+        self.update_input_hint_renderer()
+
+    def heartbeart_ctrl_q(self, now):
+        if self.ctrl_q_pressed is None:
+            return
+        if self.verify_second_exit_request(now):
+            # Still in threshold because exit request approved, so bail.
+            return
+        # Window to press Ctrl-q twice closed without receiving second Ctrl-q,
+        # so reset the hint.
+        self.debug('reset Ctrl-q timeout')
+        self.ctrl_q_forget()
+
+    def ctrl_q_forget(self):
+        if self.ctrl_q_pressed is None:
+            return
+        self.ctrl_q_pressed = None
+        self.update_input_hint_renderer()
+
+    def reset_timeouts(self):
+        self.debug('reset_timeouts/1')
+        self.ctrl_c_forget()
+        self.ctrl_q_forget()
+        self.debug('reset_timeouts!!!!!!!!!!!')
+
+    # ***
 
     @property
     def sep(self):
@@ -441,6 +660,8 @@ class SophisticatedPrompt(PrompterCommon):
         # but not by the other derived class, PromptForMoreTags. But it makes
         # some magic easier to do this.)
         return ''
+
+    # ***
 
     # FIXME/2019-11-23: See what below needs to happen for tags prompt, too.
 
@@ -474,6 +695,25 @@ class SophisticatedPrompt(PrompterCommon):
 
     def handle_menu_complete(self, event):
         """Awesome Prompt TAB handler."""
+        # PPT's tab complete using the first completion, not the suggestion.
+        # Here we fix that.
+        # - I.e., if the completion dropdown is open, but you see a suggestion
+        # in the input and press TAB thinking that'll finish the suggestion in
+        # the input text, you'd be wrong, and the first completion would get
+        # selected and also set to the input field.
+        # - You can use Ctrl-right arrow to accept the suggestion.
+        # But using Ctrl-right arrow is not very intuitive.
+        # Whereas using TAB seems legit.
+
+        suggestion = event.current_buffer.suggestion
+        if suggestion and suggestion.text:
+            # Pretty much exactly what load_auto_suggest_bindings does.
+            cb = event.current_buffer
+            cb.insert_text(suggestion.text)
+            return True
+
+        # Else, default to normal TAB behavior, which cycles through
+        # list of completions ('menu-complete').
         return False
 
     def handle_backward_char(self, event):

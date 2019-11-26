@@ -119,8 +119,10 @@ class BannerBarBuilder(InterfaceBuilder):
             self._parts += section.render(idx)
             self._parts.append(('', '\n'))
         if self._parts:
+            # Instead of a blank line between the banner and the prompt,
+            # show a hint or whatever message is pertinent.
             _dont_want_last_newline = self._parts.pop()
-            self._parts.extend(prompt.prompt_for_what())
+            self._parts.extend(prompt.header_hint_parts())
         return self._parts
 
     # (lb): This is a <hack> for updating the banner inline (without me
