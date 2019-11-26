@@ -187,6 +187,12 @@ class PromptForActegory(SophisticatedPrompt):
                 # immediately on prompt, because it can make the interface look
                 # daunting.
                 self.session.layout.current_buffer.start_completion()
+            if self.category:
+                # If the category is already set, user would have had to switch
+                # state back to the Activity, and now they're hitting ENTER.
+                # (lb): So I'd guess the user is ready for ENTER to mean, I'm done
+                # with the input dialog. Return False and have PPT finish prompting.
+                return False
             return True
         # Let PPT process the call, which will spit out in
         # prompt_for_actegory, but we can set the category
