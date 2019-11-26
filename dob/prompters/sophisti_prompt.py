@@ -318,19 +318,23 @@ class SophisticatedPrompt(PrompterCommon):
             enable_history_search=self.enable_history_search,
             auto_suggest=HamsterPartAutoSuggest(self.completer),
 
-            # (lb): 2019-11-23: Until now, this call had not been specifying
-            # vi_mode, so PPT defaults to emacs. However, this makes capturing
-            # 'escape' frustratingly slow. Notably, PPT's default emacs mode
-            # wires a bunch of two-key 'escape' bindings (you know emacs!).
-            # As such, PPT has to wait a hot mo. after the user presses the
-            # escape key once to see if the user presses another key that after
-            # it that matches one of the registered two-key bindings.
-            # - The time between pressing 'escape' and the callback being
-            # invoked is a little faster with vi_mode than without (emacs).
-            # - However, you can still sense a delay with vi_mode. But if
-            # you hit Ctrl-z instead, the callback is invoked immediately
-            # (so if you want a prompt prompt undo, use Ctrl-Z, not Escape!).
-            vi_mode=True,
+            # (lb): There are pros and cons to setting vi_mode.
+            # - vi_mode pros: Reacting to single 'escape' keypress is faster!
+            #   This is because PPT's default mode, emacs, wires a bunch of
+            #   two-key 'escape' bindings (you know emacs!). As such, PPT has
+            #   to wait a hot mo. after the user presses the escape key to see
+            #   if the user presses another key that then makes a match against
+            #   one of the registered two-key escape-key bindings.
+            # - vi_mode mehs: The time between pressing 'escape' and the
+            #   callback being invoked is a little faster with vi_mode than
+            #   without (emacs). However, you can still sense a little delay
+            #   with vi_mode that you do not sense with, say, a Ctrl-key combo,
+            #   where the time between keypress and reaction feels immediate.
+            # - vi_mode cons: It's missing some nice bindings, Ctrl-a, Ctrl-e, etc.
+            # MAYBE/2019-11-25: Use no mode, but specify all the bindings
+            #   explicitly that you want for the perfect User Xperience.
+            # SKIP:
+            #   vi_mode=True,
         )
         return session
 
