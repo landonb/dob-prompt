@@ -17,6 +17,8 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import re
+
 from gettext import gettext as _
 
 from prompt_toolkit import print_formatted_text
@@ -56,6 +58,8 @@ class PromptForActegory(SophisticatedPrompt):
         # FIXME/2019-11-23 23:18: (lb): Will remove shortly, I affirm!
         self.debug = self.controller.client_logger.debug
 
+        self.reactegory = RegExpActegory(self.sep)
+
     # ***
 
     @property
@@ -82,12 +86,57 @@ class PromptForActegory(SophisticatedPrompt):
         return boiling_dry
 
     def handle_backspace_delete_char(self, event):
-        boiling_dry = self.boil_dry_on_backspace_if_text_empty(event)
-        if not boiling_dry and event.current_buffer.cursor_position == 0:
-            # Cursor is all the way left... do it do it do it
-            self.toggle_lock_act(event)
+        def _handle_backspace_delete_char():
+            boiling_dry = self.boil_dry_on_backspace_if_text_empty(event)
+            self.debug('boiling_dry: {}'.format(boiling_dry))
+            if boiling_dry:
+                # The text is empty, so by pressing backspace, the user
+                # triggered a switch from Category input to Activity input.
+                return True
+            return delete_before_cursor_with_magic_wrap_left()
+
+        def delete_before_cursor_with_magic_wrap_left():
+            # Check if cursor is all the way to the left, then always switch
+            # input context (Category → Activity → Category, etc.), regardless
+            # of if text is empty of not.
+            # (lb): I may change this behavior in the future, if it doesn't stick.
+            self.debug('posit: {}'.format(event.current_buffer.cursor_position))
+            if event.current_buffer.cursor_position == 0:
+                # Cursor is all the way left... do it do it do it
+                # [switch from category mode to activity mode;
+                # or from start of activity to end of category].
+                # MAYBE/2019-11-25: (lb): Depending on how this feature feels in
+                #                   actual usage, we might want to disable this.
+                self.toggle_lock_act(event)
+                return True
+            return delete_before_cursor_with_restore_completions_right()
+
+        def delete_before_cursor_with_restore_completions_right():
+            delete_before_cursor_for_real()
+            if event.current_buffer.cursor_position == len(event.current_buffer.text):
+                # The delete_before_cursor disabled the completion dropdown.
+                # If the cursor is at the end of the input, show completions again.
+                # (lb): I like this behavior. It matches typing forward, which shows
+                # the completions. And we don't show completions unless the cursor is
+                # farthest to the right, otherwise if the user were to see and accept
+                # a completion, it would push what's to the right of the cursor more
+                # to the right... unless if the user accepted a completion in the
+                # middle of existing text and we coded it to remove what was to the
+                # right of the cursor. Which seems like more work than it's worth.
+                self.session.layout.current_buffer.start_completion()
             return True
-        return boiling_dry
+
+        def delete_before_cursor_for_real():
+            # CXPX: backward_delete_char [calls delete_before_cursor and bell].
+            deleted = event.current_buffer.delete_before_cursor(count=event.arg)
+            # - PPT then calls `event.app.output.bell()` if not deleted,
+            #   but we know nothing not deleted because not boiling_dry.
+            self.controller.affirm(deleted)
+
+        return _handle_backspace_delete_char()
+
+    def reset_completer(self, binding=None, toggle_ok=False):
+        super(PromptForActegory, self).reset_completer(binding, toggle_ok)
 
     def handle_backspace_delete_more(self, event):
         if self.boil_dry_on_backspace_if_text_empty(event):
@@ -116,20 +165,28 @@ class PromptForActegory(SophisticatedPrompt):
 
     def handle_accept_line(self, event):
         if not self.lock_act:
-            activity = event.current_buffer.text
-            self.lock_activity(activity, lock_act=True)
-            # (lb): While we don't show the completions drop down when the
-            # prompt is first started (i.e., when prompting for Activity
-            # name), I think it's nice to show the drop down automatically
-            # for the latter Category half of the prompt session. There are
-            # generally fewer Categories than Activities, and once the user
-            # puts in a few, they're unlikely to add more, so it makes sense
-            # to just show the list without waiting for user to trigger it.
-            # Also, the user is more familiar with the prompt now, which is
-            # one reason we don't want to show the completions drop down
-            # immediately on prompt, because it can make the interface look
-            # daunting.
-            self.session.layout.current_buffer.start_completion()
+            text = event.current_buffer.text
+            self.debug('dissemble: text: {}'.format(text))
+            set_act_cat = self.try_disassemble_parts(text)
+            if set_act_cat:
+                # Bail now. Because false, our code will trigger PPT's
+                # accept-line, and session_prompt will finish. We're done!
+                return False
+            if not set_act_cat:
+                activity = text
+                self.lock_activity(activity, lock_act=True)
+                # (lb): While we don't show the completions drop down when the
+                # prompt is first started (i.e., when prompting for Activity
+                # name), I think it's nice to show the drop down automatically
+                # for the latter Category half of the prompt session. There are
+                # generally fewer Categories than Activities, and once the user
+                # puts in a few, they're unlikely to add more, so it makes sense
+                # to just show the list without waiting for user to trigger it.
+                # Also, the user is more familiar with the prompt now, which is
+                # one reason we don't want to show the completions drop down
+                # immediately on prompt, because it can make the interface look
+                # daunting.
+                self.session.layout.current_buffer.start_completion()
             return True
         # Let PPT process the call, which will spit out in
         # prompt_for_actegory, but we can set the category
@@ -273,7 +330,7 @@ class PromptForActegory(SophisticatedPrompt):
         return _('Enter an Activity{}Category').format(self.sep)
 
     def init_completer(self):
-        return ActegoryCompleterSuggester(self.summoned)
+        return ActegoryCompleterSuggester(self, self.summoned)
 
     def init_processor(self):
         return ActegoryHackyProcessor(self)
@@ -369,28 +426,24 @@ class PromptForActegory(SophisticatedPrompt):
         self.validator = ActegoryValidator(self)
         self.validator.update_last_seen()
 
-        # Calls PPT's PromptSession.session to run interaction until user
-        # hits enter. (So to enter act@gory, user might enter act@[ENTER]
-        # first, and then this method will be called again.)
-        text = self.session_prompt(default=default, validator=self.validator)
-        self.debug(_('GOT text: {}').format(text))
+        # Call PPT's PromptSession.session to handle user interaction.
+        # Our completer, validator, and key bindings will craft the experience.
+        # The prompt returns the final input field text, which will be either a
+        # complete (@-escaped) act@gory, or just the category, depending on how
+        # the user interacted with the prompt. But we don't care at this point.
+        # Our prompt class captures the text in handle_accept_line, just before
+        # PPT's accept-line is called (which causes session_prompt to return).
+        # If the last prompt state was setting the category, the buffer text
+        # was used to set self.category; otherwise, the user entered an act@gory
+        # into the activity input (i.e., selected an entry from the completion
+        # dropdown and pressed ENTER), and handle_accept_line parsed both the
+        # activity and the category from the text. (So the text returned here
+        # is either the category, or it's the act@gory (possibly escaped, too,
+        # e.g., _text could be 'act\\@still the activity name@category name').
 
-        # We set category in handle_accept_line.
-        self.controller.affirm(self.category == text)
+        _text = self.session_prompt(default=default, validator=self.validator)
 
-        # Once created, the caller is free to run the prompt again.
-        # (lb): Old behavior was to prompt first for Activity and then to run
-        # the prompt again for the Category name. Also, on the second prompt,
-        # for the Category, the completions dropdown was shown automatically:
-        #   # Start with completions open.
-        #   self.processor.start_completion = True
-        #   self.reset_completer()
-        # But we no longer do that. See comments at:
-        #   HackyProcessor.mark_summoned
-        # Basically, the Awesome Prompt interface is pretty busy as it is, so it's
-        # better to show a clean prompt at first -- and let the user see what the
-        # prompt controls are -- before showing the user a huge dropdown of all their
-        # data (Activity or Category names).
+        self.debug(_('prompt done! / text: {}').format(_text))
 
     # ***
 
@@ -448,28 +501,96 @@ class PromptForActegory(SophisticatedPrompt):
     def history_entry_name(self, entry, names):
         entry_name = entry
         if self.lock_act and self.sep in entry:
-            # FIXME/2019-11-23: Support "quoted names"@"foo bar"?
-            #                   For now, split at first separator.
-            _activity_name, category_name = entry.split(self.sep, 1)
+            _activity_name, category_name = self.reactegory.split_parts(entry)
             if category_name in names:
                 entry_name = None
             else:
                 entry_name = category_name
         return entry_name
 
+    # ***
+
+    def completions_changed(self):
+        super(PromptForActegory, self).completions_changed()
+
+        if self.showing_completions:
+            return
+
+        text = self.session.app.current_buffer.text
+        self.debug('dissemble: text: {}'.format(text))
+        set_act_cat = self.try_disassemble_parts(text)
+
+    def try_disassemble_parts(self, text):
+        activity, category = self.reactegory.split_parts(text)
+
+        if category is not None:
+            self.category = category
+            self.lock_activity(activity)
+            return True
+        return False
+
+
+class RegExpActegory(object):
+
+    def __init__(self, sep):
+        self.sep = sep
+
+    @property
+    def sep(self):
+        return self._sep
+
+    @sep.setter
+    def sep(self, sep):
+        self._sep = sep
+        self.reset_re()
+
+    def reset_re(self):
+        self.re_unescaped_sep = re.compile(r'''(?<!\\){}'''.format(self.sep))
+        self.esc_sep = r'\\{}'.format(self.sep)
+        self.raw_sep = r'{}'.format(self.sep)
+
+    def escape(self, text):
+        escaped = re.sub(self.raw_sep, self.esc_sep, text)
+        return escaped
+
+    def unescape(self, text):
+        unescaped = re.sub(self.esc_sep, self.raw_sep, text)
+        return unescaped
+
+    def split_parts(self, text):
+        try:
+            escaped_act, escaped_cat = self.re_unescaped_sep.split(text, 1)
+        except ValueError:
+            return text, None
+        activity = self.unescape(escaped_act)
+        category = self.unescape(escaped_cat)
+        return activity, category
+
 
 class ActegoryCompleterSuggester(FactPartCompleterSuggester):
     """
     """
 
+    def __init__(self, prompt, *args, **kwargs):
+        super(ActegoryCompleterSuggester, self).__init__(*args, **kwargs)
+        self.prompt = prompt
+
     def hydrate_name(self, item, skip_category_name=False, **kwargs):
         name = item.name
         if not skip_category_name:
             try:
-                name = '{}{}{}'.format(item.name, self.sep, item.category.name)
-            except AttributeError:
+                name = '{}{}{}'.format(
+                    self.escape_text(item.name),
+                    self.prompt.sep,
+                    self.escape_text(item.category.name),
+                )
+            except AttributeError as err:
+                # item is AlchemyCategory, and we already set name = item.name. Pass!
                 pass
         return name
+
+    def escape_text(self, text):
+        return self.prompt.reactegory.escape(text)
 
 
 class ActegoryHackyProcessor(HackyProcessor):
@@ -567,37 +688,43 @@ class ActegoryValidator(Validator):
             return
         self.last_text = text
 
-        # tl;dr: If user types '@' after activity, lock activity name
-        #   and move on to editing the category.
-        # (lb): A question I asked myself: Would you rather trigger on the
-        # separator (@) being anywhere in the string, or only at the end?
-        # - I think it'd be weird to type some text, left arrow back over
-        # it, then insert an '@' and have the prompt "lock" the stuff to
-        # the left... also, the rest of the code allows '@' in Activity
-        # and Category names, so unless we force the user to use the
-        # command line so they can "quote @ around" the problem, at least
-        # offer a weird little work-around in the prompt, which is:
-        #   - If you want to use a separator character ('@') in the Activity
-        #   name, type the name first without the separator, then left-arrow
-        #   back to where it belongs, and insert it, then hit ENTER to
-        #   trigger the prompt to move on to editing the category.
-        # - Note that the prompt still does not support the separator
-        # character at the end of the Activity name, but there's always
-        # the command line, e.g.,:
-        #   `dob edit --activity="Foo@" 1234`
-        # or
-        #   `dob now "Foo@"@`
-        # which might look strange unless you follow the cosmic CLI groove.
-        # Then it makes complete sense.
-        # - Recap: If you put the '@' at the end of the prompt text, the code
-        # here interprets it as finishing the Activity name; but if you insert
-        # the '@' within the text and not at the end, “why not” [which is
-        # something an HIIT coach might say to motivate you, why not. -lb].
-        # FIXME/2019-11-24 14:49: Make this behavior optional?
-        # FIXME/2019-11-24 14:49: What about sep and tag CONFIG options?
-        if not self.prompt.lock_act and text.endswith(self.prompt.sep):
-            activity = text.strip(self.prompt.sep)
-            self.prompt.lock_activity(activity)
+        # tl;dr: When the state is Activity input, the text is either an
+        #   Activity name, or it's an encoded "act@gory". So look for an
+        #   un-escaped separator ('@') in text. If found, split the text
+        #   apart, lock the activity name, and switch to Category input.
+        #
+        # (lb): I had originally only had the code react if the user typed
+        #   the separator character to the end of the input, e.g.,
+        #
+        #     last_char_is_sep = ((len(last_text) == len(text) - 1)
+        #                         and (text.startswith(last_text))
+        #                         and (text.endswith(self.prompt.sep)))
+        #
+        #   but we also check for the separator in completions_changed,
+        #   and completions_changed is called pretty much a lot of the
+        #   time (even when the completions dropdown does not appear to
+        #   change state).
+        #
+        #   So we'll pretty much always look for the separator character
+        #   in the input.
+        #
+        #   To avoid this magic, the user can escape the separator ('\\@').
+        #
+        #   Note also that this validator is not only triggered by the user
+        #   typing single key presses, but also but changes caused by the
+        #   user accepting a suggestion or by selecting a completion from
+        #   the dropdown.
+
+        # Because the completions list contains encoded act@gories, do not
+        # process anything while the user is moving the completions selection
+        # around. (lb): I have not tested what happens without this guard,
+        # but I'd imagine chaos.
+        if self.prompt.showing_completions:
+            self.prompt.debug('showing completions')
+            return
+
+        self.prompt.debug('dissemble: text: {}'.format(text))
+        self.prompt.try_disassemble_parts(text)
 
         # Use ValidationError to show message in bottom-left of prompt
         # (just above our the_bottom_area footer).
