@@ -223,10 +223,6 @@ class PromptForActegory(SophisticatedPrompt):
         self.update_input_hint(event)
         return True
 
-    def handle_escape_dismiss(self, event):
-        self.session.layout.current_buffer.cancel_completion()
-        return True
-
     # ***
 
     def forget_category(self, event, new_text=None):
@@ -250,9 +246,6 @@ class PromptForActegory(SophisticatedPrompt):
         event.current_buffer.cursor_position = len(event.current_buffer.text)
         if was_lock_act != self.lock_act:
             self.restart_completer(event)
-
-    def update_input_hint(self, event):
-        self.update_input_hint_renderer(event.app.renderer)
 
     @property
     def prompt_header_hint(self):

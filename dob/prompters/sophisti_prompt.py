@@ -560,6 +560,9 @@ class SophisticatedPrompt(PrompterCommon):
 
         return line_parts
 
+    def update_input_hint(self, event):
+        self.update_input_hint_renderer(event.app.renderer)
+
     # (lb): HACK!
     def update_input_hint_renderer(self, renderer=None):
         if renderer is None:
@@ -686,8 +689,14 @@ class SophisticatedPrompt(PrompterCommon):
         return False
 
     def handle_escape_dismiss(self, event):
-        """Awesome Prompt Dramatic Undo handler."""
-        return False
+        if self.showing_completions:
+            # Hide completions on escape.
+            self.session.layout.current_buffer.cancel_completion()
+        else:
+            # (lb): Experimental behavior: Reset input on escape if no dropdown.
+            # Reset input instead of completions dropdown not visible.
+            self.handle_content_reset(event)
+        return True
 
     def handle_accept_line(self, event):
         """Awesome Prompt ENTER, etc., handler."""
