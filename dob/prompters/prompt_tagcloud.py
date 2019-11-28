@@ -233,7 +233,8 @@ class PromptForMoreTags(SophisticatedPrompt):
 
     @property
     def changed_since_init(self):
-        return self.session.app.current_buffer.text
+        # The init text state is the empty string, so True if anything but.
+        return bool(self.session.app.current_buffer.text)
 
     def approve_exit_request(self):
         """Awesome Prompt Ctrl-q handler."""
