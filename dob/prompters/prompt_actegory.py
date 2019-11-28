@@ -169,6 +169,8 @@ class PromptForActegory(SophisticatedPrompt):
                 # accept-line, and session_prompt will finish. We're done!
                 return False
             if not set_act_cat:
+                # TESTME/2019-11-27: (lb): I believe validator will have run
+                # and decoded the text... but I'm not 💯.
                 activity = text
                 self.lock_activity(activity, lock_act=True)
                 # (lb): While we don't show the completions drop down when the
