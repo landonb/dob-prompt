@@ -666,8 +666,6 @@ class SophisticatedPrompt(PrompterCommon):
 
     # ***
 
-    # FIXME/2019-11-23: See what below needs to happen for tags prompt, too.
-
     def handle_backspace_delete_char(self, event):
         """Awesome Prompt Backspace handler."""
         return False

@@ -262,6 +262,32 @@ class PromptForMoreTags(SophisticatedPrompt):
         line_parts = [('', fake_prompt)]
         return line_parts
 
+    # ***
+
+    def handle_clear_screen(self, event):
+        """Awesome Prompt Ctrl-l handler."""
+        # (lb): IDGI: For TagCloud (which uses this method), I tried being DRY, and calling:
+        #   return self.handle_content_reset(event)
+        # but I see a weird boxy character get inserted, or I see a character
+        # in the one space between the prompt and the input field -- the reset
+        # sets text='' but for some reason has to cursor_position=1. But not
+        # here. Here the expectable cursor_position=0 works as expected. So
+        # what gives, I don't understand.
+        event.current_buffer.text = ''
+        event.current_buffer.cursor_position = len(event.current_buffer.text)
+        return True
+
+    def handle_content_reset(self, event):
+        event.current_buffer.text = ''
+        # (lb): Weird, setting position to 0 causes non printing character
+        # to print (or whatever, a boxy character). So use at least 1.
+        # (This does seem odd. We do not do this elsewhere in the code.)
+        event.current_buffer.cursor_position = len(event.current_buffer.text) or 1
+        self.update_input_hint()
+        return True
+
+# ***
+
 
 class TagCloudBottomBarArea(BottomBarArea):
     """
