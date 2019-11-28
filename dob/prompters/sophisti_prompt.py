@@ -258,7 +258,7 @@ class SophisticatedPrompt(PrompterCommon):
         names = set()
         # FIXME: (lb): Does this make any sense?
         for entry in list(self.history.load_history_strings()):
-            entry_name = self.history_entry_name(entry, names)
+            entry_name = self.history_entry_name(entry)
             if entry_name is None or entry_name in names:
                 continue
             names.add(entry_name)
@@ -268,7 +268,7 @@ class SophisticatedPrompt(PrompterCommon):
             results.reverse()
         return results
 
-    def history_entry_name(self, entry, _names):
+    def history_entry_name(self, entry):
         return entry
 
     # ***

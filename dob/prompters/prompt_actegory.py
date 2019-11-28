@@ -492,14 +492,13 @@ class PromptForActegory(SophisticatedPrompt):
             results, skip_category_name=bool(self.category),
         )
 
-    def history_entry_name(self, entry, names):
+    def history_entry_name(self, entry):
         entry_name = entry
-        if self.lock_act and self.sep in entry:
+        if self.lock_act and self.reactegory.re_unescaped_sep.search(entry):
+            # In Category mode, but history lists act@gories, so split apart
+            # and discard the Activity name.
             _activity_name, category_name = self.reactegory.split_parts(entry)
-            if category_name in names:
-                entry_name = None
-            else:
-                entry_name = category_name
+            return category_name
         return entry_name
 
     # ***
