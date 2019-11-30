@@ -105,12 +105,16 @@ class PromptForMoreTags(SophisticatedPrompt):
     def init_bottombar(self):
         return TagCloudBottomBarArea(self)
 
-    def fetch_results(self):
+    def fetch_completions(self):
         if self.active_sort == self.bottombar.meta_sort_by_selected:
             results = self.refresh_completions_selected()
         else:
-            results = super(PromptForMoreTags, self).fetch_results()
+            results = super(PromptForMoreTags, self).fetch_completions()
         return results
+
+    @property
+    def no_completion(self):
+        return self.no_completion_tag
 
     def refresh_completions_selected(self):
         results = []
@@ -121,12 +125,14 @@ class PromptForMoreTags(SophisticatedPrompt):
             results.reverse()
         return results
 
-    def ask_for_tags(self, already_selected, activity):
+    def ask_for_tags(self, already_selected, activity, no_completion=None):
         self.selected_tags = set(tag.name for tag in already_selected)
         self.ordered_tags = list(self.selected_tags)
         self.ordered_tags.sort()
 
         self.activity = activity
+
+        self.no_completion_tag = no_completion
 
         self.prepare_session()
 
@@ -318,7 +324,7 @@ class TagCloudBottomBarArea(BottomBarArea):
         # NOTE: Need to specify 'action', or binding won't get applied
         #       (because parent class logic). So using dummy, 'selected'.
         #       (lb): We don't use action callback, but do special check in
-        #       fetch_results, which is sorta lame (coupling) but it works.
+        #       fetch_completions, which is sorta lame (coupling) but it works.
         return KeyBond(
             'f8',
             _('selected'),

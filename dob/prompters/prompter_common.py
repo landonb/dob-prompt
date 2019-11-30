@@ -28,9 +28,9 @@ class PrompterCommon(object):
     """
     """
 
-    def ask_act_cat(self, filter_activity, filter_category):
+    def ask_act_cat(self, *args, **kwargs):
         raise NotImplementedError
 
-    def ask_for_tags(self, already_selected, activity):
+    def ask_for_tags(self, *args, **kwargs):
         raise NotImplementedError
 

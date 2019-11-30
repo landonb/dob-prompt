@@ -54,10 +54,13 @@ class FactPartCompleterSuggester(WordCompleter):
         self.words = words
         self.meta_dict = metad
 
-    def hydrate_result(self, result, words, metad, **kwargs):
+    def hydrate_result(self, result, words, metad, no_completion=None, **kwargs):
         item, usage, span = result
 
         name = self.hydrate_name(item, **kwargs)
+        if not self.check_filter(name, no_completion):
+            return
+
         words.append(name)
 
         self.hydrate_result_usage(name, usage, span, metad)
@@ -81,6 +84,11 @@ class FactPartCompleterSuggester(WordCompleter):
 
     def hydrate_name(self, item, **kwargs):
         return item.name
+
+    def check_filter(self, name, no_completion):
+        if not name:
+            return False
+        return not no_completion.search(name)
 
     def get_completions(self, document, complete_event):
         self.summoned(showing_completions=True)

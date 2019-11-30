@@ -35,9 +35,9 @@ class AwesomePrompt(PrompterCommon):
         self.prompt_actegory = PromptForActegory(controller)
         self.prompt_for_tags = PromptForMoreTags(controller)
 
-    def ask_act_cat(self, filter_activity, filter_category):
-        return self.prompt_actegory.ask_act_cat(filter_activity, filter_category)
+    def ask_act_cat(self, *args, **kwargs):
+        return self.prompt_actegory.ask_act_cat(*args, **kwargs)
 
-    def ask_for_tags(self, already_selected, activity):
-        return self.prompt_for_tags.ask_for_tags(already_selected, activity)
+    def ask_for_tags(self, *args, **kwargs):
+        return self.prompt_for_tags.ask_for_tags(*args, **kwargs)
 

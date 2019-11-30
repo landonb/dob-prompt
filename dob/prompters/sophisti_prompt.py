@@ -240,18 +240,22 @@ class SophisticatedPrompt(PrompterCommon):
     FakeUsageWrapper = namedtuple('FakeUsageWrapper', ('item', 'uses', 'span'))
 
     def refresh_completions(self):
-        results = self.fetch_results()
+        results = self.fetch_completions()
         self.hydrate_completer(results)
 
-    def fetch_results(self):
+    def fetch_completions(self):
         if self.sorting_by_history:
             results = self.refresh_completions_history()
         else:
             results = self.refresh_completions_fact_part()
         return results
 
+    @property
+    def no_completion(self):
+        raise NotImplementedError
+
     def hydrate_completer(self, results):
-        self.completer.hydrate(results)
+        self.completer.hydrate(results, no_completion=self.no_completion)
 
     def refresh_completions_history(self):
         results = []

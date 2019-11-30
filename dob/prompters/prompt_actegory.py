@@ -17,7 +17,6 @@
 
 from __future__ import absolute_import, unicode_literals
 
-import re
 import time
 
 from gettext import gettext as _
@@ -25,6 +24,7 @@ from gettext import gettext as _
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput, Transformation
 from prompt_toolkit.validation import Validator, ValidationError
 
+from ..helpers.re_actegory import RegExpActegory
 from .colors_terrific import TerrificColors1
 from .hacky_processor import HackyProcessor
 from .interface_bonds import KeyBond
@@ -361,9 +361,18 @@ class PromptForActegory(SophisticatedPrompt):
 
     # ***
 
-    def ask_act_cat(self, filter_activity, filter_category):
+    def ask_act_cat(
+        self,
+        filter_activity,
+        filter_category,
+        no_completion_act=None,
+        no_completion_cat=None,
+    ):
         self.activity0 = filter_activity
         self.category0 = filter_category
+
+        self.no_completion_act = no_completion_act
+        self.no_completion_cat = no_completion_cat
 
         self.update_state(filter_activity, filter_category, startup=True)
 
@@ -487,9 +496,19 @@ class PromptForActegory(SophisticatedPrompt):
                 category = self.category
         return category
 
+    @property
+    def no_completion(self):
+        if not self.lock_act:
+            no_completion = self.no_completion_act
+        else:
+            no_completion = self.no_completion_cat
+        return no_completion
+
     def hydrate_completer(self, results):
         self.completer.hydrate(
-            results, skip_category_name=bool(self.category),
+            results,
+            skip_category_name=bool(self.category),
+            no_completion=self.no_completion,
         )
 
     def history_entry_name(self, entry):
@@ -551,42 +570,6 @@ class PromptForActegory(SophisticatedPrompt):
         return exitable
 
     # ***
-
-class RegExpActegory(object):
-
-    def __init__(self, sep):
-        self.sep = sep
-
-    @property
-    def sep(self):
-        return self._sep
-
-    @sep.setter
-    def sep(self, sep):
-        self._sep = sep
-        self.reset_re()
-
-    def reset_re(self):
-        self.re_unescaped_sep = re.compile(r'''(?<!\\){}'''.format(self.sep))
-        self.esc_sep = r'\\{}'.format(self.sep)
-        self.raw_sep = r'{}'.format(self.sep)
-
-    def escape(self, text):
-        escaped = re.sub(self.raw_sep, self.esc_sep, text)
-        return escaped
-
-    def unescape(self, text):
-        unescaped = re.sub(self.esc_sep, self.raw_sep, text)
-        return unescaped
-
-    def split_parts(self, text):
-        try:
-            escaped_act, escaped_cat = self.re_unescaped_sep.split(text, 1)
-        except ValueError:
-            return self.unescape(text), None
-        activity = self.unescape(escaped_act)
-        category = self.unescape(escaped_cat)
-        return activity, category
 
 
 class ActegoryCompleterSuggester(FactPartCompleterSuggester):
