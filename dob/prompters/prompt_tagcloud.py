@@ -273,7 +273,7 @@ class PromptForMoreTags(SophisticatedPrompt):
 
     def handle_clear_screen(self, event):
         """Awesome Prompt Ctrl-l handler."""
-        # (lb): IDGI: For TagCloud (which uses this method), I tried being DRY, and calling:
+        # (lb): IDGI: For TagCloud (which uses this method), I tried to DRY, and call:
         #   return self.handle_content_reset(event)
         # but I see a weird boxy character get inserted, or I see a character
         # in the one space between the prompt and the input field -- the reset
