@@ -530,7 +530,7 @@ class PromptForActegory(SophisticatedPrompt):
 
         text = self.session.app.current_buffer.text
         self.debug('dissemble: text: {}'.format(text))
-        _set_act_cat = self.try_disassemble_parts(text)
+        _set_act_cat = self.try_disassemble_parts(text)  # noqa: F841
 
     def try_disassemble_parts(self, text):
         act_or_cat, category = self.reactegory.split_parts(text)
@@ -736,7 +736,7 @@ class ActegoryValidator(Validator):
             return
 
         self.prompt.debug('dissemble: text: {}'.format(text))
-        _set_act_cat = self.prompt.try_disassemble_parts(text)
+        _set_act_cat = self.prompt.try_disassemble_parts(text)  # noqa: F841
 
         # Use ValidationError to show message in bottom-left of prompt
         # (just above our the_bottom_area footer).
