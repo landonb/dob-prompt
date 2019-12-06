@@ -589,7 +589,7 @@ class ActegoryCompleterSuggester(FactPartCompleterSuggester):
                     self.prompt.sep,
                     self.escape_text(item.category.name),
                 )
-            except AttributeError as err:
+            except AttributeError:
                 # item is AlchemyCategory, and we already set name = item.name. Pass!
                 pass
         return name
