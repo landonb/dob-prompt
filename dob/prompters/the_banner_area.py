@@ -108,16 +108,16 @@ class BannerBarArea(object):
         # the decorator, which executes the basic binding after running
         # our middleware method.
         @classmethod
-        def bubble_basic_binding(cls, named_command):
+        def bubble_binding(cls, named_command):
             # cls is Decorators
             def _bubble_basic_decorator(func, *args, **kwargs):
-                def _bubble_basic_binding(event, *args, **kwargs):
+                def _bubble_binding(event, *args, **kwargs):
                     handled = func(event, *args, **kwargs)
                     if not handled:
                         basic_binding = get_by_name(named_command)
                         basic_binding(event)
                     return handled
-                return update_wrapper(_bubble_basic_binding, func)
+                return update_wrapper(_bubble_binding, func)
             return _bubble_basic_decorator
 
         @classmethod
@@ -168,7 +168,7 @@ class BannerBarArea(object):
                 # Backspace
                 handled = self.prompt.handle_backspace_delete_char(event)
                 # Kick basic binding.
-                decor = BannerBarArea.Decorators.bubble_basic_binding('backward-delete-char')
+                decor = BannerBarArea.Decorators.bubble_binding('backward-delete-char')
                 decor(lambda event: handled)(event)
             elif event.data == '\x08':
                 # MAYBE: (lb): Would there ever be a case where someone absolutely
@@ -186,7 +186,7 @@ class BannerBarArea(object):
     def wire_hook_ctrl_w(self, key_bindings):
         keycode = ('c-w',)
 
-        @BannerBarArea.Decorators.bubble_basic_binding('unix-word-rubout')
+        @BannerBarArea.Decorators.bubble_binding('unix-word-rubout')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_word_rubout(event)
@@ -198,7 +198,7 @@ class BannerBarArea(object):
         # The basic binding clears the screen, including our banner!
         # - So override to just clear the input line.
         # SKIP:
-        #   @BannerBarArea.Decorators.bubble_basic_binding('clear-screen')
+        #   @BannerBarArea.Decorators.bubble_binding('clear-screen')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             self.prompt.handle_clear_screen(event)
@@ -215,7 +215,7 @@ class BannerBarArea(object):
         # search.start_forward_incremental_search, but that feature
         # seems not as useful as provider left-handed (per QWERTY)
         # method to save (to complement right-handed ENTER option).
-        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.bubble_binding('accept-line')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
@@ -226,7 +226,7 @@ class BannerBarArea(object):
 
         # (lb): Redundant? Both Ctrl-space and Ctrl-s are left-hand
         # accessible. Do we really need 2 left-hand accessible ENTERs?
-        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.bubble_binding('accept-line')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
@@ -240,7 +240,7 @@ class BannerBarArea(object):
         # a Validator gatekeeper that likes to raise ValidationError
         # hints. So we need to handle this situation ourselves, to get
         # around the validator.
-        @BannerBarArea.Decorators.bubble_basic_binding('accept-line')
+        @BannerBarArea.Decorators.bubble_binding('accept-line')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_accept_line(event)
@@ -263,7 +263,7 @@ class BannerBarArea(object):
         # cursor, but in the completions dropdown below the prompt, the first
         # entry is "Appointments". Hitting TAB, PPT defaults to completing
         # with "Appointments" and not "Pool Time", like one would expect!
-        @BannerBarArea.Decorators.bubble_basic_binding('menu-complete')
+        @BannerBarArea.Decorators.bubble_binding('menu-complete')
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
         def handler(event):
             return self.prompt.handle_menu_complete(event)
@@ -272,7 +272,7 @@ class BannerBarArea(object):
     def wire_hook_left(self, key_bindings):
         keycode = ('left',)
 
-        @BannerBarArea.Decorators.bubble_basic_binding('backward-char')
+        @BannerBarArea.Decorators.bubble_binding('backward-char')
         # Note that when the completion dropdown is showing, this handler
         # does not fire at all, so we use a Validator as a hacky way to
         # be sure to call reset_timeouts (because as the user left/right/
@@ -286,7 +286,7 @@ class BannerBarArea(object):
     def wire_hook_right(self, key_bindings):
         keycode = ('right',)
 
-        @BannerBarArea.Decorators.bubble_basic_binding('forward-char')
+        @BannerBarArea.Decorators.bubble_binding('forward-char')
         # See commend in wire_hook_left: 'right' not triggered when completions
         # dropdown showing, so separate wiring in place to call reset_timeouts
         # when the 'right' event is masked from us.
