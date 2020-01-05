@@ -33,11 +33,11 @@ __all__ = (
 # (lb): These are duplicated in setup.cfg:[metadata], but not sure how to DRY.
 #   Fortunately, they're not likely to change.
 __author__ = 'HotOffThe Hamster'
-__author_email__ = 'hotoffthehamster+dob@gmail.com'
+__author_email__ = 'hotoffthehamster+dobprompt@gmail.com'
 
 # (lb): Not sure if the package name is available at runtime. Seems kinda meta,
 # anyway, like, Who am I? I just want to avoid hard coding this string in docs.
-__package_name__ = 'dob'
+__package_name__ = 'dob-prompt'
 __arg0name__ = os.path.basename(sys.argv[0])
 
 
