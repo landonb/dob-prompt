@@ -1,0 +1,41 @@
+# Building/Packaging/Distributing.
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Byte-compiled/Optimized Python and Library/DLL files.
+*.py[cod]
+__pycache__
+
+# Testing and CI tasks.
+.pytest_cache/
+.tox
+
+# `make coverage-html` output
+.coverage
+htmlcov/
+
+# pytest-cov / coverage / https://codecov.io
+coverage.xml
+
+# Created by Sphinx on `make docs`:
+docs/_build
+docs/modules.rst
+# `make docs` Sphinx autodocs-generated.
+docs/dob_prompt.prompters.rst
+docs/dob_prompt.rst
+
+# In lieu of a personalizable, secondary Grep/Silver Searcher/RipGrep ignore,
+# like .gitignore's .git/info/exclude, the repo contains an .ignore.example.
+.ignore
+
+# ‘quickfix’ make task for Vim development.
+.make.out
+
+# Translations
+*.mo
+
+# (lb): 2019-02-23: I wish I knew what was creating this file, ha!
+pip-wheel-metadata/
+
