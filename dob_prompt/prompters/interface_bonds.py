@@ -15,7 +15,7 @@
 # If you lost the GNU General Public License that ships with this software
 # repository (read the 'LICENSE' file), see <http://www.gnu.org/licenses/>.
 
-import six
+""""""
 
 __all__ = (
     'KeyBond',
@@ -73,7 +73,7 @@ class KeyCodeBriefly(object):
 
     @property
     def key_hint(self):
-        if isinstance(self.keycode, six.text_type):
+        if isinstance(self.keycode, str):
             key_hint = self.keycode.upper()
         elif len(self.keycode) == 1:
             # E.g., 'm-h' → 'M-h'.

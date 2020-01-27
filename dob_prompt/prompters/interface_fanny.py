@@ -15,8 +15,6 @@
 # If you lost the GNU General Public License that ships with this software
 # repository (read the 'LICENSE' file), see <http://www.gnu.org/licenses/>.
 
-import six
-
 from .interface_bases import InterfaceBuilder, InterfaceSection
 
 __all__ = (
@@ -201,7 +199,7 @@ class BindingsBarBuilder(InterfaceBuilder):
             if callable(footer):
                 footer = footer(self, dummy)
 
-            if isinstance(footer, six.text_type):
+            if isinstance(footer, str):
                 dummy.add_normal(footer)
                 parts = dummy.parts
             else:

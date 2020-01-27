@@ -17,7 +17,6 @@
 
 from gettext import gettext as _
 
-import six
 from prompt_toolkit.styles import Style
 
 from .interface_bonds import KeyBond
@@ -299,7 +298,7 @@ class BottomBarArea(object):
             return handler
 
         for binding in self.all_bindings:
-            if isinstance(binding.action, six.text_type):
+            if isinstance(binding.action, str):
                 handler = make_filter_handler(binding.keycode)
             elif callable(binding.action):
                 handler = binding.action
@@ -311,7 +310,7 @@ class BottomBarArea(object):
                 # NOTE: (lb): key_bindings.add is normally used as a @decorator.
                 #       But here we just wire the higher order component directly
                 #       (there might be another way to do this, but I'm not sure).
-                if isinstance(binding.keycode, six.text_type):
+                if isinstance(binding.keycode, str):
                     key_bindings.add(binding.keycode)(handler)
                 else:
                     # An iterable, e.g., escape sequence (for meta-key combos).

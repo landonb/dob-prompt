@@ -518,7 +518,7 @@ class SophisticatedPrompt(PrompterCommon):
         Return the path to the history file for a specific topic.
 
         Args:
-            topic (text_type): Topic name, to distinguish different histories.
+            topic (str): Topic name, to distinguish different histories.
 
         Returns:
             str: Fully qualified path to history file for specified topic.

@@ -32,10 +32,6 @@ requirements = [
     # Amazeballs prompt library.
     # FIXME/2019-02-21: Submit PR. Until then, whose fork?
     'prompt-toolkit-dob >= 2.0.9',  # Imports as prompt_toolkit.
-# FIXME/2020-01-05 17:50: Remove 'six', 'future', etc.
-    # Virtuous Six Python 2 and 3 compatibility library.
-    #  https://six.readthedocs.io/
-    'six',
 ]
 
 # *** Minimal setup() function -- Prefer using config where possible.
