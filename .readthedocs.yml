@@ -1,3 +1,7 @@
+# This file exists within 'dob-prompt':
+#
+#   https://github.com/hotoffthehamster/dob-prompt
+
 version: 2
 
 python:

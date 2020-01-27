@@ -1,5 +1,9 @@
 @ECHO OFF
 
+REM This file exists within 'dob-prompt':
+REM
+REM   https://github.com/hotoffthehamster/dob-prompt
+
 REM Command file for Sphinx documentation
 
 if "%SPHINXBUILD%" == "" (

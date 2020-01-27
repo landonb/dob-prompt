@@ -1,5 +1,9 @@
 # vim:tw=0:ts=2:sw=2:noet:ft=make:
 
+# This file exists within 'dob-prompt':
+#
+#   https://github.com/hotoffthehamster/dob-prompt
+
 PROJNAME = dob_prompt
 
 BUILDDIR = _build

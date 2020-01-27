@@ -1,4 +1,7 @@
-# Building/Packaging/Distributing.
+# This file exists within 'dob-prompt':
+#
+#   https://github.com/hotoffthehamster/dob-prompt
+
 build/
 dist/
 *.egg-info/

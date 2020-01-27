@@ -1,3 +1,7 @@
+# This file exists within 'dob-prompt':
+#
+#   https://github.com/hotoffthehamster/dob-prompt
+
 # USAGE: `/bin/cp .ignore.example .ignore` and personalize.
 
 .git/

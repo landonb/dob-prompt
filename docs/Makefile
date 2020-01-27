@@ -1,5 +1,8 @@
-# Makefile for Sphinx documentation
+# This file exists within 'dob-prompt':
 #
+#   https://github.com/hotoffthehamster/dob-prompt
+
+# Makefile for Sphinx documentation
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
