@@ -1,20 +1,28 @@
-#######
+@@@@@@@
 Credits
-#######
+@@@@@@@
+
+.. |dob| replace:: ``dob``
+.. _dob: https://github.com/hotoffthehamster/dob
 
 .. |dob-prompt| replace:: ``dob-prompt``
 .. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
 
-...
-==========================================
+.. |dob-viewer| replace:: ``dob-viewer``
+.. _dob-viewer: https://github.com/hotoffthehamster/dob-viewer
 
-Development Lead
-----------------
+.. |nark| replace:: ``nark``
+.. _nark: https://github.com/hotoffthehamster/nark
 
-* `X X <https://github.com/XX>`_
+###############################
+``dob-prompt`` (2018 — Present)
+###############################
 
-Patch and Pull Request Contributors
------------------------------------
+Project Lead
+============
 
-* (Your name here)
+..  (`Landon Bouma <https://github.com/landonb>`_)
+
+* `HotOffThe Hamster <https://github.com/hotoffthehamster>`_
+  (aka Landon Bouma ``<hotoffthehamster+landonb -at- gmail.com>``)
 
