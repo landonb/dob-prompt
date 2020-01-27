@@ -21,8 +21,6 @@ dist/
 # `make docs`.
 docs/_build
 
-# man pages.
-man/dob-prompt.1
 # Localization file.
 messages.pot
 
