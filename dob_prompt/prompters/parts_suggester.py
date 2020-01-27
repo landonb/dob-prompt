@@ -19,8 +19,6 @@
 
 """PPT WordCompleter subclass."""
 
-from __future__ import absolute_import, unicode_literals
-
 from gettext import gettext as _
 
 from inflector import English, Inflector

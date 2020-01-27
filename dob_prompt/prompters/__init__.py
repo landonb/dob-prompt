@@ -19,8 +19,6 @@
 
 """Prompter interface class, and top-level package module for prompter modules."""
 
-from __future__ import absolute_import, unicode_literals
-
 import apipkg
 
 # Setup lazy loading.

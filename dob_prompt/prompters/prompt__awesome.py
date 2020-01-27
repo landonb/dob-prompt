@@ -17,8 +17,6 @@
 # If you lost the GNU General Public License that ships with this software
 # repository (read the 'LICENSE' file), see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, unicode_literals
-
 from .prompt_actegory import PromptForActegory
 from .prompt_tagcloud import PromptForMoreTags
 from .prompter_common import PrompterCommon

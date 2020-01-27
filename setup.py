@@ -24,10 +24,6 @@ requirements = [
 # FIXME/2020-01-05 17:57: Require dob, or the other way around?
     # The dob CLI core.
     'dob',
-# FIXME/2020-01-05 17:31: Scrub the `future` library, but now it is!
-    # Compatibility layer between Python 2 and Python 3.
-    #  https://python-future.org/
-    'future',
     # Vocabulary word pluralizer.
     #  https://github.com/ixmatus/inflector
     'Inflector',
