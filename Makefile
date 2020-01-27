@@ -155,6 +155,14 @@ test-one: venvforce test-hint
 	py.test $(TEST_ARGS) -x tests/
 .PHONY: test-one
 
+quickfix:
+	# Convert partial paths to full paths, for Vim quickfix.
+	sed -r "s#^([^ ]+:[0-9]+:)#$(shell pwd)/\1#" -i .make.out
+	# Convert double-colons in messages (not file:line:s) -- at least
+	# those we can identify -- to avoid quickfix errorformat hits.
+	sed -r "s#^(.* .*):([0-9]+):#\1∷\2:#" -i .make.out
+.PHONY: quickfix
+
 coverage: venvforce
 	coverage run -m pytest $(TEST_ARGS) tests
 	coverage report
@@ -167,14 +175,6 @@ coverage-html: coverage view-coverage
 view-coverage:
 	$(PYBROWSER) htmlcov/index.html
 .PHONY: view-coverage
-
-quickfix:
-	# Convert partial paths to full paths, for Vim quickfix.
-	sed -r "s#^([^ ]+:[0-9]+:)#$(shell pwd)/\1#" -i .make.out
-	# Convert double-colons in messages (not file:line:s) -- at least
-	# those we can identify -- to avoid quickfix errorformat hits.
-	sed -r "s#^(.* .*):([0-9]+):#\1∷\2:#" -i .make.out
-.PHONY: quickfix
 
 docs: docs-html
 	$(PYBROWSER) docs/_build/html/index.html
