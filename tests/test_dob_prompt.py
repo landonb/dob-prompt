@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # This file is part of 'dob_prompt'.
 #
 # 'dob_prompt' is free software: you can redistribute it and/or modify
