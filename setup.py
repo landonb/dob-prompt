@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # This file exists within 'dob-prompt':
 #
 #   https://github.com/hotoffthehamster/dob-prompt
