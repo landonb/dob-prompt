@@ -21,16 +21,18 @@ from setuptools import find_packages, setup
 requirements = [
     # https://github.com/pytest-dev/apipkg
     'apipkg',
-# FIXME/2020-01-05 17:57: Require dob, or the other way around?
-    # The dob CLI core.
-    'dob',
     # Vocabulary word pluralizer.
     #  https://github.com/ixmatus/inflector
     'Inflector',
     # Elapsed timedelta formatter, e.g., "1.25 days".
-    'human-friendly_pedantic-timedelta >= 0.0.6',  #  Imports as pedantic_timedelta.
+    # - Imports as `pedantic_timedelta`.
+    #  https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
+    'human-friendly_pedantic-timedelta >= 0.0.6',
     # Amazeballs prompt library.
-    # FIXME/2019-02-21: Submit PR. Until then, whose fork?
+    #   https://github.com/prompt-toolkit/python-prompt-toolkit
+    #     'prompt-toolkit',
+    # - FIXME/2019-02-21: (lb): Need to submit PR, then return to mainline.
+    #   https://github.com/hotoffthehamster/python-prompt-toolkit
     'prompt-toolkit-dob >= 2.0.9',  # Imports as prompt_toolkit.
 ]
 
