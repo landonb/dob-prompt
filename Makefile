@@ -120,27 +120,35 @@ lint: venvforce
 	doc8
 .PHONY: lint
 
-test: venvforce
-	@echo "Use the PYTEST_ADDOPTS environment variable to add extra command line options."
+test: venvforce test-hint
 	py.test $(TEST_ARGS) tests/
 .PHONY: test
-
-test-debug: test-local quickfix
-.PHONY: test-debug
-
-test-local: venvforce
-	# If you want Make to fail if py.test fails, you want pipefail.
-	# Put this at the top of the Makefile:
-	#     SHELL = /bin/bash -o pipefail
-	# or don't call tasks that pipe from Travis CI (avoid false positives).
-	py.test $(TEST_ARGS) tests/ | tee .make.out
-.PHONY: test-local
 
 test-all: venvforce
 	tox
 .PHONY: test-all
 
-test-one: venvforce
+test-debug: test-local quickfix
+.PHONY: test-debug
+
+test-hint:
+	@echo "Use the PYTEST_ADDOPTS environment variable to add extra command line options."
+.PHONY: test-hint
+
+test-local: venvforce test-hint
+	# (lb): I tried using pipefail to catch failure, but it didn't trip. E.g.,:
+	#           SHELL = /bin/bash
+	#           ...
+	#           test-local:
+	#             set -o pipefail
+	#             py.test ... | tee ...
+	#       Alternatively, we can access the special PIPESTATUS environ instead.
+	py.test $(TEST_ARGS) tests/ | tee .make.out
+	# Express the exit code of py.test, not the tee.
+	exit ${PIPESTATUS[0]}
+.PHONY: test-local
+
+test-one: venvforce test-hint
 	# You can also obviously: TEST_ARGS=-x make test
 	# See also, e.g.,:
 	#   py.test --pdb -vv -k test_function tests/
