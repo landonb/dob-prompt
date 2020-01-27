@@ -19,23 +19,17 @@ htmlcov/
 # pytest-cov / coverage / https://codecov.io
 coverage.xml
 
+# Translations
+*.mo
+
+# Akin to .gitignore's private .git/info/exclude, this repo contains an
+# .ignore.example file you (DEV) could copy to .ignore and customize.
+.ignore
+
 # Created by Sphinx on `make docs`:
 docs/_build
 docs/modules.rst
 # `make docs` Sphinx autodocs-generated.
 docs/dob_prompt.prompters.rst
 docs/dob_prompt.rst
-
-# In lieu of a personalizable, secondary Grep/Silver Searcher/RipGrep ignore,
-# like .gitignore's .git/info/exclude, the repo contains an .ignore.example.
-.ignore
-
-# ‘quickfix’ make task for Vim development.
-.make.out
-
-# Translations
-*.mo
-
-# (lb): 2019-02-23: I wish I knew what was creating this file, ha!
-pip-wheel-metadata/
 
