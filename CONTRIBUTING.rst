@@ -2,11 +2,11 @@
 Contributing
 ############
 
-.. |dob| replace:: ``dob``
-.. _dob: https://github.com/hotoffthehamster/dob
+.. |dob-prompt| replace:: ``dob-prompt``
+.. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
 
-.. |nark| replace:: ``nark``
-.. _nark: https://github.com/hotoffthehamster/nark
+.. |user-docs| replace:: user documentation
+.. _user-docs: https://github.com/hotoffthehamster/dob-prompt/tree/develop/docs
 
 .. |envlist| replace:: ``envlist``
 .. _envlist: https://tox.readthedocs.io/en/latest/config.html#conf-envlist
@@ -32,6 +32,12 @@ Contributing
 .. |virtualenvwrapper| replace:: ``virtualenvwrapper``
 .. _virtualenvwrapper: https://pypi.org/project/virtualenvwrapper/
 
+.. |PEP-257| replace:: PEP 257
+.. _PEP-257: https://www.python.org/dev/peps/pep-0257/
+
+.. |goog-py-sty| replace:: Google Python Style Guide
+.. _goog-py-sty: https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
+
 .. contents:: Contributing Contents
    :depth: 2
    :local:
@@ -49,7 +55,7 @@ You can contribute in many ways:
 Report Bugs
 -----------
 
-Report bugs at https://github.com/hotoffthehamster/dob/issues.
+Report bugs at https://github.com/hotoffthehamster/dob-prompt/issues.
 
 When reporting a bug, please include:
 
@@ -74,9 +80,15 @@ Pick one, assign yourself to it, and work on the issue.
 Write Documentation
 -------------------
 
-If you find documentation out of date, missing, or confusing,
-please help improve it. This includes the official user documentation,
-the README, other developer documentation, and documentation.
+If you find documentation out of date, missing, or confusing, please help
+us to improve it.
+
+This includes the official |user-docs|_,
+the `README
+<https://github.com/hotoffthehamster/dob-prompt/blob/develop/README.rst>`__,
+and the inline docstrings that generate the `API documentation
+<https://dob-prompt.readthedocs.io/en/latest/modules.html>`__
+(per |PEP-257|_ and |goog-py-sty|_).
 
 We also appreciate reference from blog posts, articles, and other projects.
 
@@ -84,7 +96,7 @@ Submit Feedback
 ---------------
 
 The best way to send feedback is to file an issue at
-https://github.com/hotoffthehamster/dob/issues.
+https://github.com/hotoffthehamster/dob-prompt/issues.
 
 See above for reporting bugs.
 
@@ -108,68 +120,64 @@ questions or concerns. Response times may vary depending on season.
 Getting Started
 ===============
 
-Ready to contribute? Here's how to set up |dob|_ for local development.
+Ready to contribute? Here's how to set up |dob-prompt|_
+for local development.
 
-1. Fork the |dob|_ and |nark|_ repos on GitHub.
+1. Fork the |dob-prompt|_ repo on GitHub.
 
-   * Visit `<https://github.com/hotoffthehamster/dob>`__ and click *Fork*.
-
-   * Visit `<https://github.com/hotoffthehamster/nark>`__ and click *Fork*.
+   * Visit `<https://github.com/hotoffthehamster/dob-prompt>`__
+     and click *Fork*.
 
 2. Clone your fork locally.
 
    Open a local terminal, change to a directory you'd like to develop from,
    and run the command::
 
-    $ git clone git@github.com:<your_login>/dob.git
+    $ git clone git@github.com:<your_login>/dob-prompt.git
 
-    $ git clone git@github.com:<your_login>/nark.git
-
-3. Install both projects into a Python virtual instance,
-   or ``virtualenv``.
+3. Install |dob-prompt|_ into a Python virtual instance,
+   or |virtualenv|_.
 
    First, ensure that you have |virtualenvwrapper|_ installed.
 
    Next, set up a virtual environment for local development::
 
-    $ cd dob/
-    $ mkvirtualenv -a $(pwd) dob
+    $ cd dob-prompt/
+    $ mkvirtualenv -a $(pwd) dob-prompt
+    (dob-prompt) $
 
    *Note:* We use the ``-a`` option so that ``cdproject`` changes directories
-   to the ``dob/`` directory when we're in the virtual environment.
+   to the ``dob-prompt/`` directory when we're in the virtual
+   environment.
 
-   Next, set up your forks for local development::
+   Next, set up your fork for local development::
 
-    (dob) $ cdproject
-    (dob) $ make develop
-    (dob) $ cd ../nark
-    (dob) $ make develop
+    (dob-prompt) $ cdproject
+    (dob-prompt) $ make develop
 
    *Hint:* As usual, run ``workon`` to activate the virtual environment, and
    ``deactivate`` to leave it. E.g.,::
 
     # Load the Python virtual instance.
-    $ workon dob
-    (dob) $
+    $ workon dob-prompt
+    (dob-prompt) $
 
     # Do your work.
-    (dob) $ ...
+    (dob-prompt) $ ...
 
     # Finish up.
-    (dob) $ deactivate
+    (dob-prompt) $ deactivate
     $
 
 4. Before starting work on a new feature or bug fix, make sure your
    ``develop`` branch is up to date with the official branch::
 
-    (dob) $ cdproject
-    (dob) $ git remote add upstream git@github.com:hotoffthehamster/dob.git
-    (dob) $ git fetch upstream
-    (dob) $ git checkout develop
-    (dob) $ git rebase upstream/develop
-    (dob) $ git push origin HEAD
-
-   And then do the same for ../nark.
+    (dob-prompt) $ cdproject
+    (dob-prompt) $ git remote add upstream git@github.com:hotoffthehamster/dob-prompt.git
+    (dob-prompt) $ git fetch upstream
+    (dob-prompt) $ git checkout develop
+    (dob-prompt) $ git rebase upstream/develop
+    (dob-prompt) $ git push origin HEAD
 
 5. Create a branch for local development. If you are working on an known issue,
    you may want to reference the Issue number in the branch name, e.g.,::
@@ -238,7 +246,7 @@ Ready to contribute? Here's how to set up |dob|_ for local development.
 7. Throughout development, run tests and the linter -- and definitely before
    you submit a Pull Request.
 
-   |dob|_ uses
+   |dob-prompt|_ uses
    |flake8|_ for linting,
    |pytest|_ for unit testing, and
    |tox|_ for verifying against the many versions of Python.
@@ -258,13 +266,16 @@ Ready to contribute? Here's how to set up |dob|_ for local development.
    fixes, and then squash that commit into the previous commit wherein
    you originally added the code that didn't lint.
 
-   (*Note:* Rebasing is an intermediate Git skill, but you needn't be
-   afraid. Just bear in mind that you should not rebase any branch that
-   other developers are working on (which should not apply to your working
-   branch, unless you are collaborating with others, which you are probably
-   not). And know that ``git rebase --abort`` is your friend (though you might
-   want to make a copy of your local working directory before rebasing, just
-   to be safe; or at least make a new branch from the current ``HEAD``).)
+   (*Note:* Rebasing is an intermediate Git skill.
+   If you're unfamiliar, read up elsewhere.
+   But consider a few reminders.
+   First, ensure that you are not rebasing any branch that other developers
+   are also working on (which should not apply to your feature branch, unless
+   you are collaborating with others on that branch, which you are probably not).
+   Second, remember that ``git rebase --abort`` can save you from having to
+   resolve any unanticipated or complicated conflicts, should you find
+   yourself faced with rebase conflicts and unsure how to get your work back
+   (abort the rebase and maybe ask someone for help, and try another approach).)
 
    For example, pretend that I have the following git history::
 
@@ -331,7 +342,8 @@ Ready to contribute? Here's how to set up |dob|_ for local development.
    .. _rebase_atop_develop:
 
 10. Finally,
-    `submit a pull request <https://github.com/hotoffthehamster/dob/pulls>`_
+    `submit a pull request
+    <https://github.com/hotoffthehamster/dob-prompt/pulls>`_
     through the GitHub website.
 
     *Important:* Please rebase your code against ``develop`` and resolve
@@ -353,22 +365,30 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. Update docs.
 
-   * Use docstrings to document new functions, and use inline comments
-     as appropriate (longer comments should go into a reST file in the
-     ``docs/`` directory).
+   * Use docstrings to document new functions, and use (hopefully concise)
+     inline comments as appropriate.
 
-   * Update ``README.rst`` if your feature adds to or changes the API.
+     * Follow the conventions defined by |PEP-257|_ and |goog-py-sty|_.
+
+   * Document broader concepts and capture API changes and additions
+     in the |user-docs|_.
 
 2. Include tests.
 
-   * If the pull request adds new functions, they should be tested,
-     either implicitly, because they're already called by an existing
-     test. Or they should be called explicitly, because you added new
-     tests for them.
+   * If a pull request adds new classes or methods, they should be tested,
+     either implicitly, because they're already called by an existing test.
+     Or they should be tested explicitly, because you added new tests for them.
 
-   * We strive for upwards of 100% test coverage (too tedious to hit
-     all branches), but we do not enforce it. In the least, your code
-     should not reduce coverage.
+   * We strive for test coverage in the high-90s (it's too tedious to hit
+     all branches and get 100%), but we do not enforce it.
+     Please provide tests that provide majority coverage of your new code
+     (you can ignore or consider error handling branches less important to
+     cover, but all branches would still be good to test!).
+
+     * Note that, as of early 2020, existing test coverage is no where near
+       100%, so take this guideline with a grain of salt. If existing code
+       coverage improves, the core developers will have more standing to
+       demand the same of contributed code.
 
 3. Commit sensibly.
 
@@ -447,7 +467,7 @@ handler, you can wrest terminal interactivity back with ``stty``:
 - However, if you want to ``continue`` after fiddling with ``stty sane``,
   you need to restore the settings (by calling ``stty --save`` first,
   debugging, and then calling ``stty`` again with the saved settings),
-  which is easiest done from within dob using helper methods.
+  which is easiest done from within |dob-prompt|_ using helper methods.
 
   - From within the Carousel, type the ``Alt-=`` key combination to
     break into the debugger.
@@ -490,7 +510,7 @@ by running various developer tasks.
       $ tox -e flake8
 
       # is just like running flake8:
-      $ flake8 setup.py dob/ tests/
+      $ flake8 setup.py dob-prompt/ tests/
 
 2. You can lint the docs easily with one or two commands.
 
@@ -507,12 +527,13 @@ by running various developer tasks.
       # Generate the reST docs (peruse the output for errors and warnings):
       $ make docs
 
-.. note:: 2019-02-19: The project's docstrings are no longer linting.
-          (Because the author did not follow docstrings convention during
-          development, nor run the pep257 linter; because the author does
-          not value docstrings as highly as writing tests, and providing
-          coverage, and writing readable code, so now we find ourselves
-          with imperfect docstrings littered throughout the code.)
+.. note:: Not all of this author's projects adhere that well to docstrings
+          convention, so pep257-compliance is not mandatory. Generally, the
+          module docs still build! Also, this author values tests, coverage,
+          and readable code over spending time fleshing out docstrings (which
+          could be a waste of time during development, as code changes quickly!
+          but then there's usually "no time" after development, so we often find
+          ourselves with imperfect docstrings littered throughout the code).
 
           As such, feel free to run the pep257 linter,
           but also feel free not to. It's noisy.
@@ -598,10 +619,20 @@ the following custom rules:
   .. code-block:: Python
 
       if (some_thing
-          and another):
+          and another
           and another_thing):
 
-  instead of this:
+  or write this:
+
+  .. code-block:: Python
+
+      if (
+        some_thing
+        and another
+        and another_thing
+      ):
+
+  but do not write this:
 
   .. code-block:: Python
 
@@ -612,7 +643,7 @@ the following custom rules:
 * *Disabled:* "**W605**: invalid escape sequence".
 
   This rules incorrectly fires on some regex expression,
-  such as ``\d{2}``, so shunned.
+  such as ``\d{2}``, thus, shunned.
 
 There are some unwritten rules (because there are unenforceable by
 the existing linters, by way of not being features), including:
@@ -634,11 +665,10 @@ the existing linters, by way of not being features), including:
   it's a good idea to strive for shorter methods, and it's not all that
   difficult to do, once you develop your own tricks.
 
-  (This author likes to write a long function at first, and then to break
+  (For instance, one could write a long function at first, and then break
   it up into smaller, more coherent pieces, selecting multiple lines of code
-  at once, hitting ``<Tab>`` to indent all lines one stop, and then adding
-  ``def`` lines to each grouping of code, and assigning descriptive method
-  names.)
+  at once, hitting ``<Tab>`` to indent the code one stop, then adding ``def``
+  lines to each grouping of code and assigning descriptive method names.)
 
 * *Prefer* single quotes over double quotes. (This is a loose rule).
 
@@ -662,31 +692,28 @@ the existing linters, by way of not being features), including:
 
   E.g.,: ``def _my_private_method(): ...``.
 
-* Do not worry about Python 2 compatibility.
+* Python 2 compatibility has been retired.
 
-  (It's 2019, and Python 2 end-of-life has been announced for 2020.)
-
-  You may want to mimic these conventions in new code, but it should
-  no longer be necessary to adhere to the following:
+  These conventions are no longer necessary (and were removed from the code):
 
   * Declare the encoding at the top of every file: ``-*- coding: utf-8 -*-``
 
   * Use *absolute_import* and *unicode_literals* from the ``__future__`` package.
 
-  * Use *six.text_type* to cast a Unicode string under Python 2 and 3.
+  * Use *six.text_type* to cast a string (to Unicode).
 
 Of Readability
 --------------
 
-Concerning Writing Tests, Docstrings, Comments, and Documentation:
+Concerning Writing *Tests, Docstrings, Comments, and Documentation*:
 
-* Strive to write code that is self-documenting.
+* Strive to write code that is *self-documenting*.
 
   Use *expressive* variable and methods names (and use long names, if they need to be).
 
-  Break long functions into a bunch of small methods, which forces you to document
-  how the long function works by giving each smaller unit of work a descriptive
-  method name.
+  Break long functions into a collection of shorter methods. This will inherently
+  document how the long function works if you give each smaller unit of work a
+  descriptive method name.
 
   Use well-named, intermediate variables to make code more readable, rather than
   writing a long one-liner. By naming intermediate values, you will provide
@@ -700,6 +727,8 @@ Concerning Writing Tests, Docstrings, Comments, and Documentation:
   time consuming to write (and to read! if you made it this far, dear
   reader!). Written documentation is also likely to become outdated quickly,
   as new code is added and old code is changed, and documents lie in the dust.
+  (Which is not to say that docstrings have no utility! Just that docstrings
+  are essentially worthless if what you documented has no test coverage, say.)
 
 Altogether Now
 --------------
@@ -722,7 +751,8 @@ __ `Pull Request Guidelines`_
 Code of Conduct
 ===============
 
-Please respect and adhere to the `Code of Conduct <code-of-conduct.html>`__.
+Please respect and adhere to the `Code of Conduct <code-of-conduct.html>`__
+(please also read it!).
 
 **🐹appy 🐹amster 🐹acking!!1**
 
