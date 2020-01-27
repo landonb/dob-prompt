@@ -2,37 +2,39 @@
 #
 #   https://github.com/hotoffthehamster/dob-prompt
 
+# Packaging — `make dist`.
 build/
 dist/
 *.egg-info/
 .eggs/
 
-# Byte-compiled/Optimized Python and Library/DLL files.
+# Python byte code.
 *.py[cod]
-__pycache__
+__pycache__/
 
-# Testing and CI tasks.
+# Testing/CI tasks.
 .pytest_cache/
 .tox
 
-# `make coverage-html` output
+# Coverage — `make coverage`.
 .coverage
+# Coverage — `make coverage-html`.
 htmlcov/
-
-# pytest-cov / coverage / https://codecov.io
+# Coverage — `codecov` https://codecov.io.
 coverage.xml
 
-# Translations
-*.mo
-
-# Akin to .gitignore's private .git/info/exclude, this repo contains an
-# .ignore.example file you (DEV) could copy to .ignore and customize.
+# User's personal .ignore (e.g., .ignore.example).
 .ignore
 
-# Created by Sphinx on `make docs`:
-docs/_build
-docs/modules.rst
-# `make docs` Sphinx autodocs-generated.
-docs/dob_prompt.prompters.rst
-docs/dob_prompt.rst
+# Optional private DEV Makefile.
+Makefile.local
+
+# Sphinx Docs — `make docs`
+docs/_build/
+
+# Test output for Vim quickfix — `make test-local`.
+.make.out
+
+# Translations files.
+*.mo
 
