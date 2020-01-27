@@ -35,14 +35,11 @@ dob-prompt
 .. |dob-prompt| replace:: ``dob-prompt``
 .. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
 
-|dob|_ is an interactive, terminal-based time tracking application.
+|dob-prompt|_ is a component of |dob|_,  an interactive, terminal-based,
+time tracking, journaling, note-taking, and life-hacking application.
 
-You'll find Vim-like navigation,
-robust filtering and searching capabilities,
-and a colorful, customizable interface.
-
-|dob-prompt|_ is one part of |dob|_ -- it provides the interface for entering
-Activity@Category lavels, as well as for assigning and removing Tags.
+|dob-prompt|_ provides the interface for entering Activity\@Category
+labels, as well as for assigning and removing Tags.
 
 Please see the |dob-docs|_ for lots more help and instruction.
 
