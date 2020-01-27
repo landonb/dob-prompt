@@ -15,7 +15,7 @@
 
 # Travis CI config.
 #
-#   https://travis-ci.org/hotoffthehamster/dob
+#   https://travis-ci.org/hotoffthehamster/dob-prompt
 
 language: python
 
