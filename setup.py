@@ -44,12 +44,22 @@ requirements = [
 
 # *** Minimal setup() function -- Prefer using config where possible.
 
-# (lb): All settings are in setup.cfg, except identifying packages.
+# (lb): Most settings are in setup.cfg, except identifying packages.
 # (We could find-packages from within setup.cfg, but it's convoluted.)
 
 setup(
+    # Run-time dependencies installed on `pip install`. To learn more
+    # about "install_requires" vs pip's requirements files, see:
+    #   https://packaging.python.org/en/latest/requirements.html
     install_requires=requirements,
+
+    # Specify which package(s) to install.
+    # - Without any rules, find_packages returns, e.g.,
+    #     ['dob_prompt', 'tests', 'tests.dob_prompt']
+    # - With the 'exclude*' rule, this call is essentially:
+    #     packages=['dob_prompt']
     packages=find_packages(exclude=['tests*']),
+
     # Tell setuptools to determine the version
     # from the latest SCM (git) version tag.
     #
