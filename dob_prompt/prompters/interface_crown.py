@@ -119,7 +119,7 @@ class BannerBarBuilder(InterfaceBuilder):
         if self._parts:
             # Instead of a blank line between the banner and the prompt,
             # show a hint or whatever message is pertinent.
-            _dont_want_last_newline = self._parts.pop()
+            _dont_want_last_newline = self._parts.pop()  # noqa: F841 local never used
             self._parts.extend(prompt.header_hint_parts())
         return self._parts
 

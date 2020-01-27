@@ -33,7 +33,6 @@ import fauxfactory
 from click.testing import CliRunner
 from configobj import ConfigObj
 from pytest_factoryboy import register
-from unittest import mock
 
 from nark.config import decorate_config
 
