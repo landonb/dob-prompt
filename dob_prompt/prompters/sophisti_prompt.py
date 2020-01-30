@@ -386,6 +386,8 @@ class SophisticatedPrompt(PrompterCommon):
             # doesn't otherwise do anything with it other than draw it once.)
             bottom_toolbar=self.bottom_toolbar,
 
+            # 2020-01-28: The following comment was writ circa PPTv2 (PTK2) era.
+            #             PTK3 is always-async.
             # (lb): When I added burnout messages that hide on their own
             # if the user doesn't trigger them to hide earlier (like the
             # Press-Ctrl-q-Twice-to-Quit-and-Discard-Changes message), I
