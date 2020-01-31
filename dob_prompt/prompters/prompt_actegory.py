@@ -22,8 +22,8 @@ from gettext import gettext as _
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput, Transformation
 from prompt_toolkit.validation import Validator, ValidationError
 
-from dob.helpers.re_actegory import RegExpActegory
 from .colors_terrific import TerrificColors1
+from .enc_actegory_re import RegExpActegory
 from .hacky_processor import HackyProcessor
 from .interface_bonds import KeyBond
 from .parts_suggester import FactPartCompleterSuggester
