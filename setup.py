@@ -28,6 +28,9 @@ requirements = [
     # - Imports as `pedantic_timedelta`.
     #  https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
     'human-friendly_pedantic-timedelta >= 0.0.6',
+    # The heart of Hamster. (Ye olde `hamster-lib`).
+    #  https://github.com/hotoffthehamster/nark
+    'nark',
     # Amazeballs prompt library.
     #   https://github.com/prompt-toolkit/python-prompt-toolkit
     #     'prompt-toolkit',
