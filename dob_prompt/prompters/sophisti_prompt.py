@@ -15,11 +15,11 @@
 # If you lost the GNU General Public License that ships with this software
 # repository (read the 'LICENSE' file), see <http://www.gnu.org/licenses/>.
 
+from gettext import gettext as _
+
 import time
 
 from collections import namedtuple
-
-from gettext import gettext as _
 
 from prompt_toolkit import PromptSession, print_formatted_text
 from prompt_toolkit.auto_suggest import AutoSuggest
@@ -29,9 +29,9 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
 from dob.config.app_dirs import AppDirs, get_appdirs_subdir_file_path
-from dob.helpers.path import touch
 
 from .. import __package_name__
+from ..helpers.path import touch
 from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
 
