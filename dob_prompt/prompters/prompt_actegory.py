@@ -52,7 +52,7 @@ class PromptForActegory(SophisticatedPrompt):
         self.category = ''
         self.lock_act = False
 
-        self.reactegory = RegExpActegory(self.sep)
+        self.re_actegory = RegExpActegory(self.sep)
 
     # ***
 
@@ -513,10 +513,10 @@ class PromptForActegory(SophisticatedPrompt):
 
     def history_entry_name(self, entry):
         entry_name = entry
-        if self.lock_act and self.reactegory.re_unescaped_sep.search(entry):
+        if self.lock_act and self.re_actegory.re_unescaped_sep.search(entry):
             # In Category mode, but history lists act@gories, so split apart
             # and discard the Activity name.
-            _activity_name, category_name = self.reactegory.split_parts(entry)
+            _activity_name, category_name = self.re_actegory.split_parts(entry)
             return category_name
         return entry_name
 
@@ -533,7 +533,7 @@ class PromptForActegory(SophisticatedPrompt):
         _set_act_cat = self.try_disassemble_parts(text)  # noqa: F841
 
     def try_disassemble_parts(self, text):
-        act_or_cat, category = self.reactegory.split_parts(text)
+        act_or_cat, category = self.re_actegory.split_parts(text)
 
         if category is not None:
             self.category = category
@@ -595,7 +595,7 @@ class ActegoryCompleterSuggester(FactPartCompleterSuggester):
         return name
 
     def escape_text(self, text):
-        return self.prompt.reactegory.escape(text)
+        return self.prompt.re_actegory.escape(text)
 
 
 class ActegoryHackyProcessor(HackyProcessor):
