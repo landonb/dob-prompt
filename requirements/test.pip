@@ -1,6 +1,11 @@
 # Specifies packages for local testing with and without tox,
 # as well as for testing on the CI servers.
 
+# FIXME/2020-01-31 12:15: For conftest.py to load a config
+#   for test_awesome_prompt.py, but conftest.py code should
+#   be packaged in dob/dob/tests, because DRY.
+configobj >= 5.0.6
+
 # *** Py.Test Framework & Related
 
 # - "pytest: simple powerful testing with Python"

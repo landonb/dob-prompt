@@ -26,21 +26,19 @@ Fixtures available to the tests/.
   ``_parametrized`` to imply it has increased complexity.
 """
 
-import codecs
-import datetime
 import os
 import pytest
 
-import fauxfactory
-from click.testing import CliRunner
+# FIXME/2020-01-31: Move shared dob/tests/conftest.py code to dob/dob/tests/
+#   and then get rid of ConfigObj dependency here, and the non-DRY code below.
 from configobj import ConfigObj
+
 from pytest_factoryboy import register
 
 from nark.config import decorate_config
 
 # import dob_prompt.dob_prompt as dob_prompt
 
-import dob.dob as dob
 from dob.config.fileboss import default_config_path
 from dob.controller import Controller
 
@@ -52,85 +50,13 @@ register(factories.FactFactory)
 
 
 @pytest.fixture
-def filename():
-    """Provide a filename string."""
-    return fauxfactory.gen_utf8()
-
-
-@pytest.fixture
-def filepath(tmpdir, filename):
-    """Provide a fully qualified pathame within our tmp-dir."""
-    return os.path.join(tmpdir.strpath, filename)
-
-
-@pytest.fixture
-def appdirs(mocker, tmpdir):
-    """Provide mocked version specific user dirs using a tmpdir."""
-    def ensure_directory_exists(directory):
-        if not os.path.lexists(directory):
-            os.makedirs(directory)
-        return directory
-
-    dob.AppDirs = mocker.MagicMock()
-    dob.AppDirs.user_config_dir = ensure_directory_exists(
-        os.path.join(tmpdir.mkdir('config').strpath, 'dob/'),
-    )
-    dob.AppDirs.user_data_dir = ensure_directory_exists(
-        os.path.join(tmpdir.mkdir('data').strpath, 'dob/'),
-    )
-    dob.AppDirs.user_cache_dir = ensure_directory_exists(
-        os.path.join(tmpdir.mkdir('cache').strpath, 'dob/'),
-    )
-    dob.AppDirs.user_log_dir = ensure_directory_exists(
-        os.path.join(tmpdir.mkdir('log').strpath, 'dob/'),
-    )
-    return dob.AppDirs
-
-
-@pytest.fixture
-def runner(appdirs, get_config_file, tmpdir):
-    """Provide a convenient fixture to simulate execution of (sub-) commands."""
-    def runner(args=[], keep_paths=False, **kwargs):
-        # Override environments that AppDirs (thankfully) hooks. Ref:
-        #   ~/.virtualenvs/dob/lib/python3.6/site-packages/appdirs.py
-
-        # Override paths: (1) if caller running multiple command test
-        # (keep_paths=True); or (2) if user wants theirs (DOB_KEEP_PATHS).
-        if keep_paths or os.environ.get('DOB_KEEP_PATHS', False):
-            XDG_CONFIG_HOME = os.environ['XDG_CONFIG_HOME']
-            XDG_DATA_HOME = os.environ['XDG_DATA_HOME']
-        else:
-            path = tmpdir.strpath
-            XDG_CONFIG_HOME = '{}/.config'.format(path)
-            XDG_DATA_HOME = '{}/.local/share'.format(path)
-        os.environ['XDG_CONFIG_HOME'] = XDG_CONFIG_HOME
-        os.environ['XDG_DATA_HOME'] = XDG_DATA_HOME
-
-        env = {
-            'XDG_CONFIG_HOME': XDG_CONFIG_HOME,
-            'XDG_DATA_HOME': XDG_DATA_HOME,
-            # Do not overwrite ~/.cache/dob path, where dob.log lives,
-            # so DEV tail sees test output, too:
-            #   'XDG_CACHE_HOME': '{}/.cache'.format(path),
-            # It should not be necessary to set the state directory:
-            #   'XDG_STATE_HOME': '{}/.local/state'.format(path),
-            # AppDirs also checks 2 other environs, generally set
-            # to system paths, and also you'll find already existing
-            # for your user, probably:
-            #   'XDG_DATA_DIRS': '/usr/local/share' or '/usr/share',
-            #   'XDG_CONFIG_DIRS': '/etc/xdg',
-        }
-        return CliRunner().invoke(dob.run, args, env=env, **kwargs)
-    return runner
-
-
-@pytest.fixture
 def config_root(nark_config, dob_config):
     """Provide a generic baseline configuration."""
     config_root = decorate_config(nark_config)
     config_root.update(dob_config)
     config = config_root.as_dict()
     return config
+
 
 # This method essentially same as: nark:tests/conftest.py::base_config.
 @pytest.fixture
@@ -352,65 +278,6 @@ def config_instance(tmpdir, faker):
     return generate_config
 
 
-@pytest.fixture
-def config_file(config_instance, appdirs):
-    """Provide a config file store under our fake config dir."""
-    conf_path = os.path.join(appdirs.user_config_dir, 'dob.conf')
-    with codecs.open(conf_path, 'w', encoding='utf-8') as fobj:
-        config_instance().write(fobj)
-
-
-@pytest.fixture
-def get_config_file(config_instance, appdirs):
-    """Provide a dynamic config file store under our fake config dir."""
-    def generate(**kwargs):
-        instance = config_instance(**kwargs)
-        conf_path = os.path.join(appdirs.user_config_dir, 'dob.conf')
-        with codecs.open(conf_path, 'w', encoding='utf-8') as fobj:
-            instance.write(fobj)
-        return instance
-    return generate
-
-
-# Various config settings
-@pytest.fixture
-def db_name(request):
-    """Return a randomized database name."""
-    return fauxfactory.gen_utf8()
-
-
-@pytest.fixture
-def db_user(request):
-    """Return a randomized database username."""
-    return fauxfactory.gen_utf8()
-
-
-@pytest.fixture
-def db_password(request):
-    """Return a randomized database password."""
-    return fauxfactory.gen_utf8()
-
-
-@pytest.fixture(params=(fauxfactory.gen_latin1(), fauxfactory.gen_ipaddr()))
-def db_host(request):
-    """Return a randomized database username."""
-    return request.param
-
-
-@pytest.fixture
-def db_port(request):
-    """Return a randomized database port."""
-    return str(fauxfactory.gen_integer(min_value=0, max_value=65535))
-
-
-@pytest.fixture
-def ongoing_fact(controller_with_logging, fact):
-    """Fixture tests that ``ongoing fact`` can be saved to data store."""
-    fact.end = None
-    fact = controller_with_logging.facts.save(fact)
-    return fact
-
-
 def prepare_controller(config_root):
     controller = Controller()
     controller.wire_configience(config_root=config_root)
@@ -438,46 +305,4 @@ def controller_with_logging(config_root, mocker):
     controller.standup_store()
     yield controller
     controller.store.cleanup()
-
-
-@pytest.fixture(params=[
-    # 2018-05-05: (lb): I'm so confused. Why is datetime.datetime returned
-    # in one test, but freezegun.api.FakeDatetime returned in another?
-    # And then for today's date, you use datetime.time! So strange!!
-    #
-    # I thought it might be because @freezegun.freeze_time only freezes
-    # now(), so all other times are not mocked, but note how the frozen
-    # 18:00 time, '2015-12-12 18:00', is not mocked in the first two tests,
-    # but then it is in the third test!! So confused!
-    (None, None, '', {
-        'since': None,
-        'until': None,
-    }),
-    ('2015-12-12 18:00', '2015-12-12 19:30', '', {
-        'since': datetime.datetime(2015, 12, 12, 18, 0, 0),
-        'until': datetime.datetime(2015, 12, 12, 19, 30, 0),
-    }),
-    ('2015-12-12 18:00', '2015-12-12 19:30', '', {
-        'since': datetime.datetime(2015, 12, 12, 18, 0, 0),
-        'until': datetime.datetime(2015, 12, 12, 19, 30, 0),
-    }),
-    ('2015-12-12 18:00', '', '', {
-        # (lb): Note sure diff btw. FakeDatetime and datetime.
-        # 'since': freezegun.api.FakeDatetime(2015, 12, 12, 18, 0, 0),
-        'since': datetime.datetime(2015, 12, 12, 18, 0, 0),
-        'until': None,  # `not until` becomes None, so '' => None.
-    }),
-    ('2015-12-12', '', '', {
-        # 'since': freezegun.api.FakeDatetime(2015, 12, 12, 0, 0, 0),
-        'since': datetime.datetime(2015, 12, 12, 0, 0, 0),
-        'until': None,  # `not until` becomes None, so '' => None.
-    }),
-    ('13:00', '', '', {
-        'since': datetime.datetime(2015, 12, 12, 13, 0, 0),
-        'until': None,  # `not until` becomes None, so '' => None.
-    }),
-])
-def search_parameter_parametrized(request):
-    """Provide a parametrized set of arguments for the ``search`` command."""
-    return request.param
 
