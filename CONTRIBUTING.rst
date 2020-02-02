@@ -510,7 +510,7 @@ by running various developer tasks.
       $ tox -e flake8
 
       # is just like running flake8:
-      $ flake8 setup.py dob-prompt/ tests/
+      $ flake8 setup.py dob_prompt/ tests/
 
 2. You can lint the docs easily with one or two commands.
 
