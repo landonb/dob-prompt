@@ -28,15 +28,21 @@ requirements = [
     # - Imports as `pedantic_timedelta`.
     #  https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
     'human-friendly_pedantic-timedelta >= 0.0.6',
-    # The heart of Hamster. (Ye olde `hamster-lib`).
-    #  https://github.com/hotoffthehamster/nark
-    'nark',
     # Amazeballs prompt library.
     #   https://github.com/prompt-toolkit/python-prompt-toolkit
     #     'prompt-toolkit',
     # - FIXME/2019-02-21: (lb): Need to submit PR, then return to mainline.
     #   https://github.com/hotoffthehamster/python-prompt-toolkit
     'prompt-toolkit-dob >= 2.0.9',  # Imports as prompt_toolkit.
+
+    # *** Hamster packages.
+
+    # The heart of Hamster. (Ye olde `hamster-lib`).
+    #  https://github.com/hotoffthehamster/nark
+    'nark',
+    # The controller, config, and common output and error tossing code.
+    #  https://github.com/hotoffthehamster/dob-bright
+    'dob-bright',
 ]
 
 # *** Minimal setup() function -- Prefer using config where possible.

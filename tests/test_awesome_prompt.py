@@ -36,7 +36,7 @@ class TestBasicCarousel(object):
     # ***
 
     def _feed_cli_with_input(
-        self, controller_with_logging, input_text, activity, mocker, monkeypatch,
+        self, controller_with_logging, input_text, activity, mocker,
     ):
         inp = create_pipe_input()
         try:
@@ -82,11 +82,11 @@ class TestBasicCarousel(object):
         ],
     )
     def test_basic_import4_left_arrow_three_time(
-        self, controller_with_logging, key_sequence, activity, mocker, monkeypatch,
+        self, controller_with_logging, key_sequence, activity, mocker,
     ):
         input_text = ''.join(key_sequence)
         self._feed_cli_with_input(
-            controller_with_logging, input_text, activity, mocker, monkeypatch,
+            controller_with_logging, input_text, activity, mocker,
         )
 
     # ***
@@ -112,11 +112,11 @@ class TestBasicCarousel(object):
         ],
     )
     def test_basic_import4_right_arrow_left_arrow(
-        self, controller_with_logging, key_sequence, activity, mocker, monkeypatch
+        self, controller_with_logging, key_sequence, activity, mocker,
     ):
         input_text = ''.join(key_sequence)
         self._feed_cli_with_input(
-            controller_with_logging, input_text, activity, mocker, monkeypatch,
+            controller_with_logging, input_text, activity, mocker,
         )
 
     # ***
@@ -134,10 +134,10 @@ class TestBasicCarousel(object):
         ],
     )
     def test_basic_import4_G_go_last(
-        self, controller_with_logging, key_sequence, activity, mocker, monkeypatch,
+        self, controller_with_logging, key_sequence, activity, mocker,
     ):
         input_text = ''.join(key_sequence)
         self._feed_cli_with_input(
-            controller_with_logging, input_text, activity, mocker, monkeypatch,
+            controller_with_logging, input_text, activity, mocker,
         )
 
