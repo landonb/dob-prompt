@@ -27,13 +27,13 @@ requirements = [
     # Elapsed timedelta formatter, e.g., "1.25 days".
     # - Imports as `pedantic_timedelta`.
     #  https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
-    'human-friendly_pedantic-timedelta >= 0.0.6',
+    'human-friendly_pedantic-timedelta >= 1.0.1',
     # Amazeballs prompt library.
     #   https://github.com/prompt-toolkit/python-prompt-toolkit
     #     'prompt-toolkit',
     # - FIXME/2019-02-21: (lb): Need to submit PR, then return to mainline.
     #   https://github.com/hotoffthehamster/python-prompt-toolkit
-    'prompt-toolkit-dob >= 2.0.9',  # Imports as prompt_toolkit.
+    'prompt_toolkit-dob >= 3.0.3',  # Imports as prompt_toolkit.
 
     # *** Hamster packages.
 
