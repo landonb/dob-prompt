@@ -23,7 +23,7 @@ dob-prompt
   :alt: PyPI Release Status
 
 .. image:: https://img.shields.io/github/license/hotoffthehamster/dob-prompt.svg?style=flat
-  :target: https://github.com/hotoffthehamster/dob-prompt/blob/develop/LICENSE
+  :target: https://github.com/hotoffthehamster/dob-prompt/blob/master/LICENSE
   :alt: License Status
 
 .. |dob| replace:: ``dob``
