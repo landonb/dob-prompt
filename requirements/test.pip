@@ -5,10 +5,10 @@
 #          you may need to include them in the tox test environments.
 #          Uncomment these are appropriate.
 #
-# ../config-decorator
-# ../human-friendly_pedantic-timedelta
-# ../nark
-# ../dob-bright
+#  ../config-decorator
+#  ../human-friendly_pedantic-timedelta
+#  ../nark
+#  ../dob-bright
 
 # *** Py.Test Framework & Related
 
