@@ -250,9 +250,12 @@ class BottomBarArea(object):
         #       (Also, Alt-c is mapped to opening the completion dropdown.)
 
         return KeyBond(
-            # (lb): Used to use escape code, not sure why/when stopped working:
-            #  ('escape', 'i'),
-            ('m-i',),
+            # # (lb): Used to use escape code, not sure why/when stopped working:
+            # #  ('escape', 'i'),
+            # ('m-i',),
+            # 2020-03-30: Trying escape-i again, m-i is a fork feature,
+            # and I'd rather not have to publish yet another forked project.
+            ('escape', 'i'),
             brief_ignore_case,
             handle_ignore_case,
             briefs=[_('case'), _('Case')],
@@ -273,9 +276,11 @@ class BottomBarArea(object):
             return brief
 
         return KeyBond(
-            # (lb): Used to use escape code, not sure why/when stopped working:
-            #  ('escape', 'm'),
-            ('m-m',),
+            # # (lb): Used to use escape code, not sure why/when stopped working:
+            # #  ('escape', 'm'),
+            # ('m-m',),
+            # 2020-03-30: Trying again, against nascent upstream and not HOTH:
+            ('escape', 'm'),
             brief_match_middle,
             handle_match_middle,
             briefs=[_('middle'), _('start')],

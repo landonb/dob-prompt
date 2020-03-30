@@ -82,18 +82,20 @@ class BannerBarArea(object):
         self.wire_hook_ctrl_q(key_bindings)
 
     def wire_hook_help(self, key_bindings):
-        # HEH!/2019-11-23: (lb): The old code stopped working, not sure
-        # when because I was away from dob for half the year and away
-        # from the Awesome Prompt for the year prior because building
-        # the Carousel. Life story short, for the record, here's old code:
-        #
-        #   keycode = ('escape', 'h')
-        #
-        # which is weird because PPT library is the dob fork, so pinned.
-        # Or maybe the 'escape' is a Vim mode thing? Though I tried ESC, m.
-        # In any case, the following code is what does work. At least for now.
-        # And note that a simple 'm-h' does not work; stick with tuple.
-        keycode = ('m-h',)
+        # # HEH!/2019-11-23: (lb): The old code stopped working, not sure
+        # # when because I was away from dob for half the year and away
+        # # from the Awesome Prompt for the year prior because building
+        # # the Carousel. Life story short, for the record, here's old code:
+        # #
+        # #   keycode = ('escape', 'h')
+        # #
+        # # which is weird because PPT library is the dob fork, so pinned.
+        # # Or maybe the 'escape' is a Vim mode thing? Though I tried ESC, m.
+        # # In any case, the following code is what does work. At least for now.
+        # # And note that a simple 'm-h' does not work; stick with tuple.
+        # keycode = ('m-h',)
+        # 2020-03-30: Trying again, against nascent upstream and not HOTH:
+        keycode = ('escape', 'h')
 
         def handler(event):
             self.cycle_help(event)
