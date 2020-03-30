@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+   dob_prompt.helpers
    dob_prompt.prompters
 
 Module contents
