@@ -20,29 +20,27 @@ from setuptools import find_packages, setup
 
 requirements = [
     # https://github.com/pytest-dev/apipkg
-    'apipkg',
+    'apipkg >= 1.5, < 2',
     # Vocabulary word pluralizer.
     #  https://github.com/ixmatus/inflector
-    'Inflector',
+    'Inflector >= 3.0.1, < 4',
     # Elapsed timedelta formatter, e.g., "1.25 days".
     # - Imports as `pedantic_timedelta`.
-    #  https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
-    'human-friendly_pedantic-timedelta >= 1.0.1',
-    # Amazeballs prompt library.
-    #   https://github.com/prompt-toolkit/python-prompt-toolkit
-    #     'prompt-toolkit',
-    # - FIXME/2019-02-21: (lb): Need to submit PR, then return to mainline.
-    #   https://github.com/hotoffthehamster/python-prompt-toolkit
-    'prompt_toolkit-dob >= 3.0.3',  # Imports as prompt_toolkit.
+    # https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
+    'human-friendly_pedantic-timedelta >= 2.0.0, < 3',
+    # Amazing prompt library.
+    # - Imports as prompt_toolkit.
+    # https://github.com/prompt-toolkit/python-prompt-toolkit
+    'prompt-toolkit >= 3.0.5, < 4',
 
     # *** Hamster packages.
 
     # The heart of Hamster. (Ye olde `hamster-lib`).
     #  https://github.com/hotoffthehamster/nark
-    'nark',
+    'nark >= 3.0.1, < 4',
     # The controller, config, and common output and error tossing code.
     #  https://github.com/hotoffthehamster/dob-bright
-    'dob-bright',
+    'dob-bright >= 1.0.0, < 2',
 ]
 
 # *** Minimal setup() function -- Prefer using config where possible.
