@@ -12,6 +12,14 @@ dob\_prompt.prompters.colors\_terrific module
    :undoc-members:
    :show-inheritance:
 
+dob\_prompt.prompters.enc\_actegory\_re module
+----------------------------------------------
+
+.. automodule:: dob_prompt.prompters.enc_actegory_re
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dob\_prompt.prompters.hacky\_processor module
 ---------------------------------------------
 
