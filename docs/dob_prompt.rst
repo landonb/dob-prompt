@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    dob_prompt.helpers
    dob_prompt.prompters
