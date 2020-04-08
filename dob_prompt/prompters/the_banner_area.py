@@ -115,7 +115,7 @@ class BannerBarArea(object):
                     handled = func(event, *args, **kwargs)
                     if not handled:
                         basic_binding = get_by_name(named_command)
-                        basic_binding(event)
+                        basic_binding.call(event)
                     return handled
                 return update_wrapper(_bubble_binding, func)
             return _bubble_basic_decorator
