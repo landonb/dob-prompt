@@ -485,21 +485,34 @@ class SophisticatedPrompt(PrompterCommon):
     # ***
 
     def restart_completer(self, event=None, binding=None, toggle_ok=False):
+        # (lb): Just curious: We do not really need 'event', do we?
+        self.controller.affirm(
+            self.session.app.current_buffer is self.session.layout.current_buffer
+        )
+        if event is not None:
+            self.controller.affirm(
+                self.session.app.current_buffer is event.app.current_buffer
+            )
+            inputbuf = event.app.current_buffer
+        else:
+            # Also at: self.session.layout.current_buffer
+            inputbuf = self.session.app.current_buffer
+
         # (lb): Docs indicate set_completions is part of buffer, but not so:
         #   NOPE: event.app.current_buffer.set_completions(completions=...)
         # Docs also say start_completion part of CLI object, but it's in buffer?
         #  In any case, cancel the current completion, and start a new one.
         self.showing_completions = True
-        if event is not None:
-            if event.app.current_buffer.complete_state:
-                event.app.current_buffer.cancel_completion()
-            else:
-                # Only happens first time user presses F-key,
-                #  if they haven't already pressed <TAB>.
-                toggle_ok = False
+
+        if inputbuf.complete_state:
+            inputbuf.cancel_completion()
+        else:
+            # Only happens first time user presses F-key,
+            #  if they haven't already pressed <TAB>.
+            toggle_ok = False
         self.reset_completer(binding=binding, toggle_ok=toggle_ok)
-        if (event is not None) and self.showing_completions:
-            event.app.current_buffer.start_completion()
+        if self.showing_completions:
+            inputbuf.start_completion()
 
     # ***
 
