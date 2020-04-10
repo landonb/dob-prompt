@@ -595,6 +595,7 @@ class SophisticatedPrompt(PrompterCommon):
         #     affirm(restore_column == event.app.renderer._cursor_pos.x)
         #   but less fragile/obtuse.
         cursor_x = renderer._cursor_pos.x
+        #  self.debug('UIHR: cursor_x: {}'.format(cursor_x))
 
         relative_help_row = 1
         renderer.output.cursor_up(relative_help_row)
@@ -617,7 +618,9 @@ class SophisticatedPrompt(PrompterCommon):
         # something.
         fake_prompt = prompt_parts[0][1]
         # BEWARE: The len() is not ANSI-aware. So keep a clean prompt!
-        renderer.output.cursor_backward(len(fake_prompt) - cursor_x)
+        cursor_adjust = len(fake_prompt) - cursor_x
+        #  self.debug('UIHR: cursor_adjust/1: {}'.format(cursor_adjust))
+        renderer.output.cursor_backward(cursor_adjust)
 
         self.debug('printed hint')
 

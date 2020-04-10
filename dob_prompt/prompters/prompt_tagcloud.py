@@ -283,16 +283,36 @@ class PromptForMoreTags(SophisticatedPrompt):
         return True
 
     def handle_content_reset(self, event):
+
+        # Clear the input text.
         event.current_buffer.text = ''
-        # (lb): Weird, setting position to 0 causes non printing character
-        # to print (or whatever, a boxy character). So use at least 1.
-        # (This does seem odd. We do not do this elsewhere in the code.)
-        event.current_buffer.cursor_position = len(event.current_buffer.text) or 1
-        self.update_input_hint()
-        return True
+
+        # (lb): 2020-04-10: Removed some logic here. Code use to mess around
+        # with the cursor, I think to reset the hint text above the prompt
+        # (similar to how Ctrl-c behaves). But ran into issues with the
+        # prompt not getting repositioned correctly, or buffer input not
+        # being completely overwritten. So just return now. Behavior on
+        # Escape feels much better.
+        # - To reproduce: Type one character in input, then press Escape
+        #   and wait a brief moment for PTK's double-key binding timeout
+        #   to fire our handler. On first Escape, completion dropdown is
+        #   hidden. After that, press Escape again, and cursor being sent
+        #   to leftmost column of line (and '> ' prompt not seen). If you
+        #   type, then cursor might correct itself. Also, if you enter two
+        #   characters in input, or three, etc. you'd see different behavior.
+        #   - In lieu of forcing you to view git history, here was the old code:
+        #       # (lb): Weird, setting position to 0 causes non printing character
+        #       # to print (or whatever, a boxy character). So use at least 1.
+        #       # (This does seem odd. We do not do this elsewhere in the code.)
+        #       # - Note that event.current_buffer.cursor_position
+        #       #    is still == len(event.current_buffer.text).
+        #       buffer = event.current_buffer
+        #       buffer.cursor_position = len(buffer.text) or 1
+        #       self.update_input_hint(event)
+        #   - I even tried `self.update_pending = True`, but did not help.
+
 
 # ***
-
 
 class TagCloudBottomBarArea(BottomBarArea):
     """
