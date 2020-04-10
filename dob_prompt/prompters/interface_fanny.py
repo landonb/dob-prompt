@@ -26,7 +26,6 @@ __all__ = (
 
 # ***
 
-
 class BindingsSection(InterfaceSection):
     """
     """
@@ -154,7 +153,6 @@ class BindingsSection(InterfaceSection):
 
 
 # ***
-
 
 class BindingsBarBuilder(InterfaceBuilder):
     """
