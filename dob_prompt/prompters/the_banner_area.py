@@ -82,19 +82,14 @@ class BannerBarArea(object):
         self.wire_hook_ctrl_q(key_bindings)
 
     def wire_hook_help(self, key_bindings):
-        # # HEH!/2019-11-23: (lb): The old code stopped working, not sure
-        # # when because I was away from dob for half the year and away
-        # # from the Awesome Prompt for the year prior because building
-        # # the Carousel. Life story short, for the record, here's old code:
-        # #
-        # #   keycode = ('escape', 'h')
-        # #
-        # # which is weird because PPT library is the dob fork, so pinned.
-        # # Or maybe the 'escape' is a Vim mode thing? Though I tried ESC, m.
-        # # In any case, the following code is what does work. At least for now.
-        # # And note that a simple 'm-h' does not work; stick with tuple.
-        # keycode = ('m-h',)
-        # 2020-03-30: Trying again, against nascent upstream and not HOTH:
+        # Note that Alt-bindings are wired by their 2-key escape equivalents.
+        # - So ('escape', 'h') might be thought of as ('m-h').
+        # MAYBE/2020-04-10: (lb): Alt-h is awkward to press. I like Ctrl-\.
+        #                           keycode = ('c-\\',)
+        #                         But I'll worry about that when I revisit
+        #                         mappings more generally. (There might be
+        #                         a better use for Ctrl-\, or perhaps we'll
+        #                         make key codes user-configurable.)
         keycode = ('escape', 'h')
 
         def handler(event):
@@ -145,6 +140,11 @@ class BannerBarArea(object):
         key_bindings.add(*keycode)(handler)
 
     def wire_hook_escape(self, key_bindings):
+        # (lb): There's a lag after user presses Escape, because underlying
+        # 2-character emacs escape-combo bindings. Surprisingly, hooking two
+        # Escape presses did not solve it, e.g., keycode = ('escape', 'escape',).
+        # - But if user presses *three* Escapes in a row, then this is called
+        #   before the timeout.
         keycode = ('escape',)
 
         @BannerBarArea.Decorators.reset_timeouts(self.prompt)
