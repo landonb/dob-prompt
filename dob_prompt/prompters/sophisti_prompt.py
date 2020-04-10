@@ -551,7 +551,12 @@ class SophisticatedPrompt(PrompterCommon):
     def prompt_header_hint(self):
         if self.ctrl_c_pressed:
             # Ctrl-c is blocked in the interactive editor Carousel so here as well.
+            # - Well, sorta blocked. It'll clear the input and reset the completer!
+            #   (By reset the completer, it goes back to, e.g., F2/sort-by-name.)
             hint = _('Try Ctrl-q if you want to quit!').format()
+            # (lb): 2020-04-10: Trying this, too: reset completer state.
+            binding = self.default_sort
+            self.reset_completer(binding)
         elif self.ctrl_q_pressed:
             hint = _('Press Ctrl-q a second time to really quit!').format()
         else:
