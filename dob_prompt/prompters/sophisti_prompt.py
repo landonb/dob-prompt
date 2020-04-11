@@ -365,7 +365,11 @@ class SophisticatedPrompt(PrompterCommon):
         try:
             return self._session_prompt(**kwargs)
         except (EOFError, KeyboardInterrupt):
-            raise
+            # The PTK prompt() shortcut hooks and raises on Ctrl-D, but the
+            # "Ctrl-D binding is only active when the default buffer is
+            # selected and empty." This behavior is baked in, and EOD means
+            # end-of-data, so it's like user cleared text and pressed Enter.
+            return ''
 
     def _session_prompt(self, default='', validator=None):
         validate_while_typing = validator is not None
