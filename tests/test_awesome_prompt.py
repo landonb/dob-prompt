@@ -105,7 +105,7 @@ class TestBasicCarousel(object):
                 # FIXME/2019-02-20: Because, what, arrowing left goes to
                 #                   Previous Big Bang Gap Fact,
                 #                   so extra Ctrl-Q needed?
-                #                   Oddly, in log, I still only see 2 cancel_command's!
+                #                   Oddly, in log, I still only see 2 exit_command's!
                 #                   But apparently we need 4 strokes to exit.
                 '\x11',
             ],
