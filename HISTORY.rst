@@ -13,6 +13,15 @@ History
 
 .. :changelog:
 
+1.0.5 (2020-04-12)
+==================
+
+- Bugfix: Prompt crashes if user presses Ctrl-D on empty text.
+
+- Bugfix: Prompt not positioned correctly after Escape keypress.
+
+- Enhance: Reset chosen completer on Ctrl-C (e.g., like pressing ``F2``).
+
 1.0.4 (2020-04-08)
 ==================
 
