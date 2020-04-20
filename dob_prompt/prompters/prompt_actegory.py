@@ -274,6 +274,7 @@ class PromptForActegory(SophisticatedPrompt):
 
     @property
     def colors(self):
+        # FIXME: (lb): Replace hardcoded styles. Assign from styles.conf. #styling
         return TerrificColors1()
 
     @property

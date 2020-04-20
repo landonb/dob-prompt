@@ -331,7 +331,7 @@ class BottomBarArea(object):
         # is a lot easier.)
         style = Style.from_dict({
             'bottom-toolbar': '#{} bg:#{}'.format(
-                # FIXME/2019-12-01: STYLING: Move hardcoded values to styling config.
+                # FIXME/2019-12-01: Move hardcoded values to styling config. #styling
                 self.prompt.colors.color_2,
                 self.prompt.colors.color_1,
             ),

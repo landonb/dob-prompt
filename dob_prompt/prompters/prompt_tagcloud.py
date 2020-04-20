@@ -63,6 +63,7 @@ class PromptForMoreTags(SophisticatedPrompt):
 
     @property
     def colors(self):
+        # FIXME: (lb): Replace hardcoded styles. Assign from styles.conf. #styling
         return TerrificColors2()
 
     @property
