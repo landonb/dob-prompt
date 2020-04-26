@@ -37,10 +37,10 @@ requirements = [
 
     # The heart of Hamster. (Ye olde `hamster-lib`).
     #  https://github.com/hotoffthehamster/nark
-    'nark >= 3.1.0, < 3.2',
+    'nark >= 3.1.1, < 3.2',
     # The controller, config, and common output and error tossing code.
     #  https://github.com/hotoffthehamster/dob-bright
-    'dob-bright >= 1.1.0, < 1.2',
+    'dob-bright >= 1.1.1, < 1.2',
 ]
 
 # *** Minimal setup() function -- Prefer using config where possible.
