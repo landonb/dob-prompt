@@ -13,6 +13,11 @@ History
 
 .. :changelog:
 
+1.1.0 (2020-04-26)
+==================
+
+- Packaging: Update dependency versions to pickup library changes.
+
 1.0.5 (2020-04-12)
 ==================
 
