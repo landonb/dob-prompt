@@ -44,8 +44,6 @@ sys.path.insert(0, project_root)
 # ┃                                                                     ┃
 # ┃ YOU/DEV: Customize this import and these strings for your project.  ┃
 
-import dob_prompt
-
 project_dist = 'dob-prompt'
 package_name = 'dob_prompt'
 project_ghuser = 'hotoffthehamster'
