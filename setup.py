@@ -34,13 +34,13 @@ requirements = [
     # Elapsed timedelta formatter, e.g., "1.25 days".
     # - Imports as `pedantic_timedelta`.
     # https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
-    'human-friendly_pedantic-timedelta == 2.0.0',
+    'human-friendly_pedantic-timedelta >= 2.0.0, <= 2.0.10',
     # The heart of Hamster. (Ye olde `hamster-lib`).
     #  https://github.com/hotoffthehamster/nark
-    'nark == 3.2.1',
+    'nark > 3.2.1, < 3.2.3',  # I.e., release 3.2.2, or whatever dev's running.
     # The controller, config, and common output and error tossing code.
     #  https://github.com/hotoffthehamster/dob-bright
-    'dob-bright == 1.2.1',
+    'dob-bright > 1.2.1, < 1.2.3',  # I.e., release 1.2.2, or dev's intermediate.
 ]
 
 # *** Minimal setup() function -- Prefer using config where possible.
