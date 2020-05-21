@@ -43,7 +43,10 @@ class FactPartCompleterSuggester(WordCompleter):
         words = []
         metad = {}
         for idx, result in enumerate(results):
-            # (lb): I'm just curious; showing that this is a namedtuple.
+            # (lb): Just curious; showing that each result has attributes.
+            # - Because get_all(raw=True), each result is an SQLAlchemy result
+            #   object, <class 'sqlalchemy.util._collections.result'>. But if
+            #   we used raw=False, we'd covert to a namedtuple (FakeUsageWrapper).
             item, usage, span = result
             assert results[idx].uses is usage
             assert results[idx].span is span

@@ -247,6 +247,14 @@ class SophisticatedPrompt(PrompterCommon):
             results = self.refresh_completions_history()
         else:
             results = self.refresh_completions_fact_part()
+            # The get_all() specified raw=True, which converts the result object,
+            #   <class 'sqlalchemy.util._collections.result'>
+            # into an (Item, *cols) tuple (where Item is Activity or Category,
+            # and *cols is the 'uses' and 'span' columns). We use raw=True because
+            # the result object is attribute-addressable, e.g., `results[0].uses`
+            # works. If we specified raw=False instead, we'd want to convert the
+            # tuple to a namedtuple, e.g.,
+            #   results = [SophisticatedPrompt.FakeUsageWrapper(*it) for it in results]
         return results
 
     @property
