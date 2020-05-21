@@ -196,8 +196,8 @@ class PromptForMoreTags(SophisticatedPrompt):
             include_usage=True,
             activity=activity,
             category=category,
-            sort_col=self.active_sort.action,
-            sort_order=self.sort_order,
+            sort_cols=(self.active_sort.action,),
+            sort_orders=(self.sort_order,),
         )
         self.tags_cache[cache_key] = results
         return results
