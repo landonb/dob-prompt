@@ -193,7 +193,7 @@ class PromptForMoreTags(SophisticatedPrompt):
             return self.tags_cache[cache_key]
 
         results = self.controller.tags.get_all(
-            include_usage=True,
+            include_stats=True,
             raw=True,
             activity=activity,
             category=category,

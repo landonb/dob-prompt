@@ -464,7 +464,7 @@ class PromptForActegory(SophisticatedPrompt):
             return self.categories_cache[cache_key]
 
         results = self.controller.categories.get_all(
-            include_usage=True,
+            include_stats=True,
             raw=True,
             sort_cols=(self.active_sort.action,),
             sort_orders=(self.sort_order,),
@@ -480,7 +480,7 @@ class PromptForActegory(SophisticatedPrompt):
             return self.activities_cache[cache_key]
 
         results = self.controller.activities.get_all(
-            include_usage=True,
+            include_stats=True,
             raw=True,
             category=category,
             sort_cols=(self.active_sort.action,),
