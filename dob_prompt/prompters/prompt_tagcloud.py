@@ -206,7 +206,7 @@ class PromptForMoreTags(SophisticatedPrompt):
     def refresh_restrict_activity(self):
         activity = False
         if not self.activity:
-            assert(False)  # Need actegory before tags, eh?
+            assert False  # Need actegory before tags, eh?
             return activity
         act_restrict = TagCloudBottomBarArea.TOGGLE_TYPES[
             TagCloudBottomBarArea.RESTRICT_ACT
@@ -218,7 +218,7 @@ class PromptForMoreTags(SophisticatedPrompt):
     def refresh_restrict_category(self):
         category = False
         if not self.activity:
-            assert(False)  # Need actegory before tags, eh?
+            assert False  # Need actegory before tags, eh?
             return category
         cat_restrict = TagCloudBottomBarArea.TOGGLE_TYPES[
             TagCloudBottomBarArea.RESTRICT_CAT
