@@ -15,19 +15,15 @@
 # If you lost the GNU General Public License that ships with this software
 # repository (read the 'LICENSE' file), see <http://www.gnu.org/licenses/>.
 
-"""
-Fixtures available to the tests/.
+"""Packaged conftest shim."""
 
-- In general, fixtures should return a single instance.
+# (lb): When I split dob into multiple projects, I moved the fixtures to
+# the furthest class upstream (dob-bright) which we glob back in to
+# conftest like they were originally. This is at the expense of violating
+# best practices, and the linter's good graces. But then we also don't
+# have to class out all the fixtures in the import statement, which for
+# some reason seems like an anti-pattern in pytest (import? just put it
+# all in conftest.py, we'll import that silently for you, why not).
 
-- If a fixture is a factory, its name should reflect that.
-
-- A fixture that is parametrized should be suffixed with
-  ``_parametrized`` to imply it has increased complexity.
-"""
-
-# For the fixture to work, either import specifically, or glob it all.
-# noqa: F401 'foo.bar' imported but unused
-# noqa: F403 'from foo.bar import *' used; unable to detect undefined names
 from dob_bright.tests.conftest import *  # noqa: F401, F403
 
