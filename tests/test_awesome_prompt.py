@@ -21,6 +21,9 @@ from prompt_toolkit.application.current import create_app_session
 from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
+# Import 'activity' fixture, etc.
+from nark.tests.item_factories import *  # noqa: F401, F403
+
 from dob_prompt import prompters
 
 
