@@ -484,7 +484,7 @@ class PromptForActegory(SophisticatedPrompt):
             include_stats=True,
             named_tuples=True,
             raw=True,
-            category=category,
+            match_categories=[category],
             sort_cols=(self.active_sort.action,),
             sort_orders=(self.sort_order,),
         )
