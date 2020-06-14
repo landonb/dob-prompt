@@ -29,9 +29,9 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
 from dob_bright.config.app_dirs import AppDirs, get_appdirs_subdir_file_path
+from dob_bright.helpers.path import touch
 
 from .. import __package_name__
-from ..helpers.path import touch
 from .prompter_common import PrompterCommon
 from .the_banner_area import BannerBarArea
 
