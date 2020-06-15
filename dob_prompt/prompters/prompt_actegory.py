@@ -485,7 +485,7 @@ class PromptForActegory(SophisticatedPrompt):
             include_stats=True,
             named_tuples=True,
             raw=True,
-            match_categories=[category],
+            match_categories=[category] if category is not False else [],
             sort_cols=(self.active_sort.action,),
             sort_orders=(self.sort_order,),
         )

@@ -58,6 +58,13 @@ class FactPartCompleterSuggester(WordCompleter):
     def hydrate_result(self, result, words, metad, no_completion=None, **kwargs):
         item, usage, span = result
 
+        if item is None:
+            # The categories.get_all selects from facts and outer joins activities
+            # and categories, which will pick up Activities with no Category.
+            # (lb): Which might be an issue in and of itself, but doesn't matter;
+            # exclude these (erroneous?) records.
+            return
+
         name = self.hydrate_name(item, **kwargs)
         if not self.check_filter(name, no_completion):
             return
