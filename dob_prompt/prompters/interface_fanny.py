@@ -52,6 +52,7 @@ class BindingsSection(InterfaceSection):
                 len(self.bindings),
                 len(self._plinth),
                 self.reserve_width,
+                self.max_width,
             )
         )
 
