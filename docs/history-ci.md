@@ -2,6 +2,12 @@
 
 [comment]: # DEV: release-ghub-pypi scrapes Markdown from the first section below for the GitHub release.
 
+## 1.1.1 (2020-06-18)
+
+- Packaging: Update dependencies.
+
+- Update: General refactoring and updates per changes to other packages.
+
 ## 1.1.0 (2020-04-26)
 
 - Packaging: Update dependency versions to pickup library changes.
