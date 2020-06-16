@@ -195,8 +195,8 @@ class PromptForMoreTags(SophisticatedPrompt):
         results = self.controller.tags.get_all(
             include_stats=True,
             raw=True,
-            match_activities=[activity],
-            match_categories=[category],
+            match_activities=[] if activity is False else [activity],
+            match_categories=[] if category is False else [category],
             sort_cols=(self.active_sort.action,),
             sort_orders=(self.sort_order,),
         )
