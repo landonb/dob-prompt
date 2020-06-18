@@ -12,14 +12,6 @@ dob\_prompt.prompters.colors\_terrific module
    :undoc-members:
    :show-inheritance:
 
-dob\_prompt.prompters.enc\_actegory\_re module
-----------------------------------------------
-
-.. automodule:: dob_prompt.prompters.enc_actegory_re
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dob\_prompt.prompters.hacky\_processor module
 ---------------------------------------------
 
@@ -120,6 +112,14 @@ dob\_prompt.prompters.the\_bottom\_area module
 ----------------------------------------------
 
 .. automodule:: dob_prompt.prompters.the_bottom_area
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dob\_prompt.prompters.triple\_prompter module
+---------------------------------------------
+
+.. automodule:: dob_prompt.prompters.triple_prompter
    :members:
    :undoc-members:
    :show-inheritance:
