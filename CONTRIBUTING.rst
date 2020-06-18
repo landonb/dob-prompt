@@ -6,7 +6,7 @@ Contributing
 .. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
 
 .. |user-docs| replace:: user documentation
-.. _user-docs: https://github.com/hotoffthehamster/dob-prompt/tree/master/docs
+.. _user-docs: https://github.com/hotoffthehamster/dob-prompt/tree/release/docs
 
 .. |envlist| replace:: ``envlist``
 .. _envlist: https://tox.readthedocs.io/en/latest/config.html#conf-envlist
@@ -85,7 +85,7 @@ us to improve it.
 
 This includes the official |user-docs|_,
 the `README
-<https://github.com/hotoffthehamster/dob-prompt/blob/master/README.rst>`__,
+<https://github.com/hotoffthehamster/dob-prompt/blob/release/README.rst>`__,
 and the inline docstrings that generate the `API documentation
 <https://dob-prompt.readthedocs.io/en/latest/modules.html>`__
 (per |PEP-257|_ and |goog-py-sty|_).
@@ -170,13 +170,13 @@ for local development.
     $
 
 4. Before starting work on a new feature or bug fix, make sure your
-   ``develop`` branch is up to date with the official branch::
+   ``proving`` branch is up to date with the official branch::
 
     (dob-prompt) $ cdproject
     (dob-prompt) $ git remote add upstream git@github.com:hotoffthehamster/dob-prompt.git
     (dob-prompt) $ git fetch upstream
-    (dob-prompt) $ git checkout develop
-    (dob-prompt) $ git rebase upstream/develop
+    (dob-prompt) $ git checkout proving
+    (dob-prompt) $ git rebase upstream/proving
     (dob-prompt) $ git push origin HEAD
 
 5. Create a branch for local development. If you are working on an known issue,
@@ -346,13 +346,13 @@ for local development.
     <https://github.com/hotoffthehamster/dob-prompt/pulls>`_
     through the GitHub website.
 
-    *Important:* Please rebase your code against ``develop`` and resolve
+    *Important:* Please rebase your code against ``proving`` and resolve
     merge conflicts, so that the main project maintainer does not have
     to do so themselves. E.g.,::
 
      $ git checkout feature/ISSUE-123-name-of-your-issue
      $ git fetch upstream
-     $ git rebase upstream/develop
+     $ git rebase upstream/proving
      # Resolve any conflicts, then force-push.
      $ git push origin HEAD --force
      # And then open the Pull Request.
@@ -397,7 +397,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
      __ rebase_and_squash_
 
-   * Rebase your work atop develop (as `mentioned above`__)
+   * Rebase your work atop ``proving`` (as `mentioned above`__)
      before creating the PR, or after making any requested
      changes.
 

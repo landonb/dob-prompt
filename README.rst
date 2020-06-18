@@ -2,11 +2,11 @@
 dob-prompt
 @@@@@@@@@@
 
-.. image:: https://travis-ci.com/hotoffthehamster/dob-prompt.svg?branch=develop
+.. image:: https://travis-ci.com/hotoffthehamster/dob-prompt.svg?branch=proving
   :target: https://travis-ci.com/hotoffthehamster/dob-prompt
   :alt: Build Status
 
-.. image:: https://codecov.io/gh/hotoffthehamster/dob-prompt/branch/develop/graph/badge.svg
+.. image:: https://codecov.io/gh/hotoffthehamster/dob-prompt/branch/proving/graph/badge.svg
   :target: https://codecov.io/gh/hotoffthehamster/dob-prompt
   :alt: Coverage Status
 
@@ -23,7 +23,7 @@ dob-prompt
   :alt: PyPI Release Status
 
 .. image:: https://img.shields.io/github/license/hotoffthehamster/dob-prompt.svg?style=flat
-  :target: https://github.com/hotoffthehamster/dob-prompt/blob/master/LICENSE
+  :target: https://github.com/hotoffthehamster/dob-prompt/blob/release/LICENSE
   :alt: License Status
 
 .. |dob| replace:: ``dob``
