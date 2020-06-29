@@ -3,10 +3,10 @@ History
 #######
 
 .. |dob| replace:: ``dob``
-.. _dob: https://github.com/hotoffthehamster/dob
+.. _dob: https://github.com/tallybark/dob
 
 .. |dob-bright| replace:: ``dob-bright``
-.. _dob-bright: https://github.com/hotoffthehamster/dob-bright
+.. _dob-bright: https://github.com/tallybark/dob-bright
 
 .. |dob-prompt| replace:: ``dob-prompt``
 .. _dob-prompt: https://github.com/tallybark/dob-prompt

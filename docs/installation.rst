@@ -3,7 +3,7 @@ Installation
 ############
 
 .. |dob-prompt| replace:: ``dob-prompt``
-.. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
+.. _dob-prompt: https://github.com/tallybark/dob-prompt
 
 .. |virtualenv| replace:: ``virtualenv``
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
@@ -36,7 +36,7 @@ To develop on the project, link to the source files instead:
 
     (dob-prompt) $ deactivate
     $ rmvirtualenv dob-prompt
-    $ git clone git@github.com:hotoffthehamster/dob-prompt.git
+    $ git clone git@github.com:tallybark/dob-prompt.git
     $ cd dob-prompt
     $ mkvirtualenv -a $(pwd) --python=/usr/bin/python3.6 dob-prompt
     (dob-prompt) $ make develop

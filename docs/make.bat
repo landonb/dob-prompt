@@ -2,7 +2,7 @@
 
 REM This file exists within 'dob-prompt':
 REM
-REM   https://github.com/hotoffthehamster/dob-prompt
+REM   https://github.com/tallybark/dob-prompt
 
 set PROJECTNAME=dob_prompt
 
