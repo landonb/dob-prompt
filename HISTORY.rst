@@ -9,7 +9,7 @@ History
 .. _dob-bright: https://github.com/hotoffthehamster/dob-bright
 
 .. |dob-prompt| replace:: ``dob-prompt``
-.. _dob-prompt: https://github.com/hotoffthehamster/dob-prompt
+.. _dob-prompt: https://github.com/tallybark/dob-prompt
 
 .. :changelog:
 
@@ -57,5 +57,5 @@ History
 1.0.0 (2020-03-30)
 ==================
 
-- Booyeah: Inaugural release (spin-off from dob).
+- Booyeah: Inaugural release (spin-off from |dob|_).
 
