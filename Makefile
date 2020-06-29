@@ -2,7 +2,7 @@
 
 # This file exists within 'dob-prompt':
 #
-#   https://github.com/hotoffthehamster/dob-prompt
+#   https://github.com/tallybark/dob-prompt
 
 PROJNAME = dob_prompt
 

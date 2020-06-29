@@ -2,7 +2,7 @@
 
 # This file exists within 'dob-prompt':
 #
-#   https://github.com/hotoffthehamster/dob-prompt
+#   https://github.com/tallybark/dob-prompt
 
 # Boilerplate documentation build configuration file,
 # (Originally) created by sphinx-quickstart on Tue Jul 9 22:26:36 2013

@@ -1,10 +1,10 @@
 # This file exists within 'dob-prompt':
 #
-#   https://github.com/hotoffthehamster/dob-prompt
+#   https://github.com/tallybark/dob-prompt
 
 # Travis CI config.
 #
-#   https://travis-ci.org/hotoffthehamster/dob-prompt
+#   https://travis-ci.com/github/tallybark/dob-prompt
 
 language: python
 
