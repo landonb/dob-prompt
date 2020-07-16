@@ -16,7 +16,7 @@ History
 1.1.3 (2020-06-29)
 ==================
 
-- Change ownership to ``github.com/tallybark``.
+- Change ownership to https://github.com/tallybark.
 
 1.1.2 (2020-06-18)
 ==================
