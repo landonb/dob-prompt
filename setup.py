@@ -31,6 +31,9 @@ requirements = [
 
     # *** HOTH packages.
 
+    # ActiveState/appdirs + Singleton (app-wide access w/out appname) + `mkdir -p`.
+    #  https://github.com/tallybark/easy-as-pypi-apppth#🛣
+    'easy-as-pypi-apppth',
     # Get-package-or-Git-version helper.
     #  https://github.com/tallybark/easy-as-pypi-getver
     'easy-as-pypi-getver',
@@ -38,6 +41,7 @@ requirements = [
     # - Imports as `pedantic_timedelta`.
     # https://github.com/hotoffthehamster/human-friendly_pedantic-timedelta
     'human-friendly_pedantic-timedelta > 2.0.11, < 2.0.13',
+
     # The heart of Hamster. (Ye olde `hamster-lib`).
     #  https://github.com/tallybark/nark
     'nark > 3.2.3, < 3.2.5',  # I.e., release 3.2.4, or whatever dev's running.

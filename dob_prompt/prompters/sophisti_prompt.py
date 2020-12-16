@@ -28,7 +28,9 @@ from prompt_toolkit.history import FileHistory, InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
-from dob_bright.config.app_dirs import AppDirs, get_appdirs_subdir_file_path
+from easy_as_pypi_apppth import AppDirs
+from easy_as_pypi_apppth.expand_and_mkdirs import must_get_appdirs_subdir_file_path
+
 from dob_bright.helpers.path import touch
 
 from .. import __package_name__
@@ -550,12 +552,18 @@ class SophisticatedPrompt(PrompterCommon):
         Returns:
             str: Fully qualified path to history file for specified topic.
         """
-        hist_path = get_appdirs_subdir_file_path(
+        hist_path = self.must_get_appdirs_subdir_file_path(
             file_basename=self.history_topic,
             dir_dirname=SophisticatedPrompt.DEFAULT_HIST_PATH_DIR,
-            appdirs_dir=AppDirs.user_cache_dir,
+            appdirs_dir=AppDirs().user_cache_dir,
         )
         return hist_path
+
+    def must_get_appdirs_subdir_file_path(self, **kwargs):
+        try:
+            hist_path = must_get_appdirs_subdir_file_path(**kwargs)
+        except Exception as err:
+            self.update_pending = str(err)
 
     # ***
 
@@ -571,6 +579,8 @@ class SophisticatedPrompt(PrompterCommon):
             self.reset_completer(binding)
         elif self.ctrl_q_pressed:
             hint = _('Press Ctrl-q a second time to really quit!').format()
+        elif self.update_pending and isinstance(self.update_pending, str):
+            hint = self.update_pending
         else:
             hint = ''
         return hint
@@ -627,8 +637,8 @@ class SophisticatedPrompt(PrompterCommon):
         prompt_parts = self.prompt_recreate_filled(max_col)
         print_formatted_text(FormattedText(prompt_parts), end='')
 
-        # (lb): This is insane. Put cursor where it belongs, at end of
-        # recreated text.
+        # (lb): "Inconceivable." Correct the cursor position: move the
+        # cursor to the end of the recreated text ("where it belongs").
         # - I think that renderer._cursor_pos remains unchanged,
         # but in reality the cursor moved (because print_formatted_text),
         # so here we're moving it back to where PPT expects it to be. Or
