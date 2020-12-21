@@ -29,7 +29,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.shortcuts import CompleteStyle
 
 from easy_as_pypi_apppth import AppDirs
-from easy_as_pypi_apppth.expand_and_mkdirs import must_get_appdirs_subdir_file_path
+from easy_as_pypi_apppth.expand_and_mkdirs import must_ensure_appdirs_path
 
 from dob_bright.helpers.path import touch
 
@@ -552,16 +552,16 @@ class SophisticatedPrompt(PrompterCommon):
         Returns:
             str: Fully qualified path to history file for specified topic.
         """
-        hist_path = self.must_get_appdirs_subdir_file_path(
+        hist_path = self.must_ensure_appdirs_path(
             file_basename=self.history_topic,
             dir_dirname=SophisticatedPrompt.DEFAULT_HIST_PATH_DIR,
             appdirs_dir=AppDirs().user_cache_dir,
         )
         return hist_path
 
-    def must_get_appdirs_subdir_file_path(self, **kwargs):
+    def must_ensure_appdirs_path(self, **kwargs):
         try:
-            hist_path = must_get_appdirs_subdir_file_path(**kwargs)
+            hist_path = must_ensure_appdirs_path(**kwargs)
         except Exception as err:
             self.update_pending = str(err)
 
